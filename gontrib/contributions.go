@@ -4,9 +4,10 @@ import (
 	"fmt"
 	"github.com/jubalh/gontributions/util"
 	"github.com/jubalh/gontributions/vcs"
+	"os"
 )
 
-type project struct {
+type Project struct {
 	Name        string
 	Description string
 	Gitrepos    []string
@@ -14,7 +15,7 @@ type project struct {
 
 type Configuration struct {
 	Emails   []string
-	Projects []project
+	Projects []Project
 }
 
 type Contribution struct {
@@ -25,6 +26,8 @@ type Contribution struct {
 
 func ScanContributions(configuration Configuration) []Contribution {
 	contributions := []Contribution{}
+
+	os.Mkdir("repos", 0755)
 
 	for _, project := range configuration.Projects {
 		var sumCount int
