@@ -117,7 +117,7 @@ func cmdExconf(c *cli.Context) {
 		},
 	}
 
-	text, err := json.Marshal(configuration)
+	text, err := json.MarshalIndent(configuration, "", "    ")
 	if err != nil {
 		fmt.Println(err)
 	}
