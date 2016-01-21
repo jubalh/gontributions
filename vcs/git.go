@@ -14,6 +14,8 @@ type RepoData struct {
 	localName        string
 }
 
+// GetLatestGitRepo either clones a new repo or updates an existing one
+// into the 'repos' directory.
 func GetLatestGitRepo(url string, isTest bool) error {
 	var err error
 	var local string
@@ -34,6 +36,8 @@ func GetLatestGitRepo(url string, isTest bool) error {
 	return err
 }
 
+// cloneRepo takes a RepoData struct and clones the repository
+// specified in rd.
 func cloneRepo(rd RepoData) error {
 	cmd := exec.Command("git", "clone", rd.url, rd.localName)
 	cmd.Dir = rd.workingDirectory
@@ -48,6 +52,8 @@ func cloneRepo(rd RepoData) error {
 	return nil
 }
 
+// updateRepo takes a RepoData struct and updates the repository
+// specified in rd.
 func updateRepo(rd RepoData) error {
 	cmd := exec.Command("git", "update")
 	cmd.Dir = rd.workingDirectory + "/" + rd.localName
@@ -62,6 +68,8 @@ func updateRepo(rd RepoData) error {
 	return nil
 }
 
+// CountCommits returns how often email occurs in the log for
+// the git repository at url.
 func CountCommits(url string, email string) (int, error) {
 	local := util.LocalRepoName(url)
 

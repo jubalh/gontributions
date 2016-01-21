@@ -24,6 +24,10 @@ type Contribution struct {
 	Description string
 }
 
+// ScanContributions takes a Configuration containing a list of emails
+// and a list of projects and returns a list of Contributions
+// which contain of a project, how often a user contributed to it and
+// description of the project.
 func ScanContributions(configuration Configuration) []Contribution {
 	contributions := []Contribution{}
 

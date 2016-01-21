@@ -6,6 +6,8 @@ import (
 	"strings"
 )
 
+// FileExists returns true if the file or directory exists
+// otherwise it will return false.
 func FileExists(path string) bool {
 	_, err := os.Stat(path)
 	if err != nil {
@@ -16,11 +18,14 @@ func FileExists(path string) bool {
 	return true
 }
 
+// LocalRepoName returns the last part of an URL behind the slash.
+// If the url is 'https://github.com/golang/go' it will return 'go'.
 func LocalRepoName(url string) string {
 	parts := strings.Split(url, "/")
 	return parts[len(parts)-1]
 }
 
+// PrintInfo prints text with a marker to easily spot it.
 func PrintInfo(text string) {
 	fmt.Println("==> ", text)
 }
