@@ -1,13 +1,36 @@
 package vcs
 
 import (
-	"github.com/jubalh/gontributions/util"
 	"os"
 	"testing"
 )
 
+var (
+	repoPath        = "testdata/dummy-git-repo/"
+	clonedReposPath = "testdata/repos/"
+)
+
+// Use a TestMain func for setup and teardowm
+func TestMain(t *testing.M) {
+
+	// It is better to sanitize the environment
+	// Than to throw errors
+	if err := os.RemoveAll(clonedReposPath); err != nil {
+		// We can panic, since there is something _seriously_ wrong
+		panic(err)
+	}
+	// Always use the principle of least privilege
+	os.Mkdir("testdata/repos", 0755)
+	
+	// Run all the tests
+	t.Run()
+	
+	if err := os.RemoveAll(clonedReposPath); err != nil {
+		panic(err)
+	}
+}
+
 func TestCloneRepo(t *testing.T) {
-	setup(t)
 
 	rd := RepoData{"../testdata/dummy-git-repo", "repos", "dummy-git-repo"}
 	err := cloneRepo(rd)
@@ -15,24 +38,22 @@ func TestCloneRepo(t *testing.T) {
 		t.Error("Error: ", err)
 	}
 
-	cleanUp(t)
 }
 
 // Should I test this too?
 // If yes I will need this ugly 'test' parameter :-(
 func TestGetLatestGitRepo(t *testing.T) {
-	setup(t)
 
 	err := GetLatestGitRepo("../testdata/dummy-git-repo", true)
 	if err != nil {
 		t.Error("Error: ", err)
 	}
 
-	cleanUp(t)
 }
 
+
+
 func TestCountCommits(t *testing.T) {
-	setup(t)
 
 	rd := RepoData{"../testdata/dummy-git-repo", "repos", "dummy-git-repo"}
 	err := cloneRepo(rd)
@@ -43,23 +64,6 @@ func TestCountCommits(t *testing.T) {
 	countCommit(t, "jubalh@openmailbox.org", rd.url, 1)
 	countCommit(t, "bilbo@shire.ch", rd.url, 0)
 
-	cleanUp(t)
-}
-
-func setup(t *testing.T) {
-	os.Mkdir("repos", 0777)
-	if util.FileExists("repos/dummy-git-repo") {
-		t.Error("Dummy repo should not exist")
-	}
-}
-
-func cleanUp(t *testing.T) {
-	if util.FileExists("repos") {
-		err := os.RemoveAll("repos")
-		if err != nil {
-			t.Error("Unexpected error: ", err)
-		}
-	}
 }
 
 func countCommit(t *testing.T, email string, url string, expected int) {
