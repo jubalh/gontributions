@@ -1,30 +1,50 @@
 package vcs
 
 import (
+	"fmt"
 	"os"
+	"path/filepath"
 	"testing"
 )
 
-var (
+const (
 	repoPath        = "testdata/dummy-git-repo/"
 	clonedReposPath = "testdata/repos/"
 )
 
-// Use a TestMain func for setup and teardowm
+var (
+	absoluteRepoPath   string
+	absoluteTargetPath string
+)
+
+// mwm: The function "func init(){}" gets called by convention
+// when the variables and constants are defined, but before
+// any other method
+func init() {
+	wd, err := os.Getwd()
+	if err != nil {
+		panic(err)
+	}
+	absoluteRepoPath = filepath.Join(wd, "testdata", "dummy-git-repo")
+	absoluteTargetPath = filepath.Join(wd, "testdata", "repos")
+}
+
+// mwm: Use a TestMain func for setup and teardown,
+// That is what it's there for
 func TestMain(t *testing.M) {
 
-	// It is better to sanitize the environment
-	// Than to throw errors
-	if err := os.RemoveAll(clonedReposPath); err != nil {
+	// mwm: It is better to sanitize the environment
+	// than to throw errors
+	if err := os.RemoveAll(absoluteTargetPath); err != nil {
 		// We can panic, since there is something _seriously_ wrong
 		panic(err)
 	}
-	// Always use the principle of least privilege
-	os.Mkdir("testdata/repos", 0755)
-	
+	// mwm: Always use the principle of least privilege
+	os.Mkdir(absoluteTargetPath, 0755)
+	fmt.Println(os.Getwd())
 	// Run all the tests
 	t.Run()
-	
+
 	if err := os.RemoveAll(clonedReposPath); err != nil {
 		panic(err)
 	}
@@ -32,10 +52,14 @@ func TestMain(t *testing.M) {
 
 func TestCloneRepo(t *testing.T) {
 
-	rd := RepoData{"../testdata/dummy-git-repo", "repos", "dummy-git-repo"}
-	err := cloneRepo(rd)
-	if err != nil {
+	t.Logf("Cloning\n\tfrom:%s\n\tto:%s", absoluteRepoPath, absoluteTargetPath)
+
+	rd := RepoData{absoluteRepoPath, absoluteTargetPath, "dummy-git-repo"}
+
+	if err := cloneRepo(rd); err != nil {
 		t.Error("Error: ", err)
+		// Does not make any sense to continue if we can not reliably clone a repo.
+		t.FailNow()
 	}
 
 }
@@ -44,14 +68,12 @@ func TestCloneRepo(t *testing.T) {
 // If yes I will need this ugly 'test' parameter :-(
 func TestGetLatestGitRepo(t *testing.T) {
 
-	err := GetLatestGitRepo("../testdata/dummy-git-repo", true)
+	err := GetLatestGitRepo(absoluteRepoPath, true)
 	if err != nil {
 		t.Error("Error: ", err)
 	}
 
 }
-
-
 
 func TestCountCommits(t *testing.T) {
 
