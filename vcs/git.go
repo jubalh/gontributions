@@ -8,20 +8,35 @@ import (
 	"strings"
 )
 
-func GetLatestGitRepo(url string) {
-	local := util.LocalRepoName(url)
-	if util.FileExists("repos/" + local) {
-		updateRepo(url)
-	} else {
-		cloneRepo(url)
-	}
+type RepoData struct {
+	url              string
+	workingDirectory string
+	localName        string
 }
 
-func cloneRepo(url string) error {
-	local := util.LocalRepoName(url)
+func GetLatestGitRepo(url string, isTest bool) error {
+	var err error
+	var local string
 
-	cmd := exec.Command("git", "clone", url, local)
-	cmd.Dir = "repos"
+	if isTest {
+		local = "dummy-git-repo"
+	} else {
+		local = util.LocalRepoName(url)
+	}
+
+	rd := RepoData{url: url, workingDirectory: "repos", localName: local}
+
+	if util.FileExists("repos/" + local) {
+		err = updateRepo(rd)
+	} else {
+		err = cloneRepo(rd)
+	}
+	return err
+}
+
+func cloneRepo(rd RepoData) error {
+	cmd := exec.Command("git", "clone", rd.url, rd.localName)
+	cmd.Dir = rd.workingDirectory
 	cmdOutput := &bytes.Buffer{}
 	cmd.Stdout = cmdOutput
 	err := cmd.Run()
@@ -33,11 +48,9 @@ func cloneRepo(url string) error {
 	return nil
 }
 
-func updateRepo(url string) error {
-	local := util.LocalRepoName(url)
-
+func updateRepo(rd RepoData) error {
 	cmd := exec.Command("git", "update")
-	cmd.Dir = "repos/" + local
+	cmd.Dir = rd.workingDirectory + "/" + rd.localName
 	cmdOutput := &bytes.Buffer{}
 	cmd.Stdout = cmdOutput
 	err := cmd.Run()

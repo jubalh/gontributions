@@ -33,7 +33,7 @@ func ScanContributions(configuration Configuration) []Contribution {
 		var sumCount int
 		for _, repo := range project.Gitrepos {
 			util.PrintInfo("Working on " + repo)
-			vcs.GetLatestGitRepo(repo)
+			vcs.GetLatestGitRepo(repo, false)
 			for _, email := range configuration.Emails {
 				count, err := vcs.CountCommits(repo, email)
 				if err != nil {
