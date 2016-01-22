@@ -4,8 +4,8 @@
 	<body>
 		<h1>List of open source contributions</h1>
 		{{ range . }}
-		{{ if .Project.Url }}
-		<b><a href="{{ .Project.Url }}">{{ .Project.Name }}</a></b>
+		{{ if .Project.URL }}
+		<b><a href="{{ .Project.URL }}">{{ .Project.Name }}</a></b>
 		{{ else }}
 		<b>{{ .Project.Name }}</b>
 		{{ end }}
