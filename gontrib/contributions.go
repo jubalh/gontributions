@@ -50,8 +50,10 @@ func ScanContributions(configuration Configuration) []Contribution {
 				sumCount += count
 			}
 		}
-		c := Contribution{project.Name, sumCount, project.Description}
-		contributions = append(contributions, c)
+		if sumCount > 0 {
+			c := Contribution{project.Name, sumCount, project.Description}
+			contributions = append(contributions, c)
+		}
 	}
 	return contributions
 }
