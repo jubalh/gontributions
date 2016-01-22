@@ -2,14 +2,16 @@ package gontrib
 
 import (
 	"fmt"
+	"os"
+
 	"github.com/jubalh/gontributions/util"
 	"github.com/jubalh/gontributions/vcs"
-	"os"
 )
 
 type Project struct {
 	Name        string
 	Description string
+	Url         string
 	Gitrepos    []string
 }
 
@@ -19,9 +21,8 @@ type Configuration struct {
 }
 
 type Contribution struct {
-	Project     string
-	Count       int
-	Description string
+	Project Project
+	Count   int
 }
 
 // ScanContributions takes a Configuration containing a list of emails
@@ -51,7 +52,7 @@ func ScanContributions(configuration Configuration) []Contribution {
 			}
 		}
 		if sumCount > 0 {
-			c := Contribution{project.Name, sumCount, project.Description}
+			c := Contribution{project, sumCount}
 			contributions = append(contributions, c)
 		}
 	}
