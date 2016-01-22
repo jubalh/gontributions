@@ -5,7 +5,8 @@ import (
 	"os"
 
 	"github.com/jubalh/gontributions/util"
-	"github.com/jubalh/gontributions/vcs"
+	"github.com/jubalh/gontributions/vcs/git"
+	"github.com/jubalh/gontributions/vcs/mediawiki"
 )
 
 // Project hold all important information
@@ -15,6 +16,7 @@ type Project struct {
 	Description string
 	URL         string
 	Gitrepos    []string
+	MediaWikis  []string
 }
 
 // Configuration holds the users E-Mail adresses
@@ -44,9 +46,9 @@ func ScanContributions(configuration Configuration) []Contribution {
 		var sumCount int
 		for _, repo := range project.Gitrepos {
 			util.PrintInfo("Working on " + repo)
-			vcs.GetLatestGitRepo(repo, false)
+			git.GetLatestGitRepo(repo, false)
 			for _, email := range configuration.Emails {
-				count, err := vcs.CountCommits(repo, email)
+				count, err := git.CountCommits(repo, email)
 				if err != nil {
 					fmt.Println(err)
 				}
@@ -56,6 +58,13 @@ func ScanContributions(configuration Configuration) []Contribution {
 
 				sumCount += count
 			}
+		}
+		for _, wiki := range project.MediaWikis {
+			wikiCount, err := mediawiki.GetUserEdits(wiki, "jubalh")
+			if err != nil {
+				fmt.Fprintln(os.Stderr, err)
+			}
+			sumCount += wikiCount
 		}
 		if sumCount > 0 {
 			c := Contribution{project, sumCount}
