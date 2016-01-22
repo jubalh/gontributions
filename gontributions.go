@@ -63,7 +63,7 @@ func main() {
 	app.Flags = []cli.Flag{
 		cli.StringFlag{
 			Name:  "config",
-			Value: "config.json",
+			Value: "gontrib.json",
 			Usage: "Set which config file to use",
 		},
 		cli.StringFlag{
