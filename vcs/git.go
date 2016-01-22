@@ -8,6 +8,9 @@ import (
 	"strings"
 )
 
+// RepoData holds the URL of a repository,
+// the working directory where to execute the commands
+// in, and the name of the local repositor.
 type RepoData struct {
 	url              string
 	workingDirectory string

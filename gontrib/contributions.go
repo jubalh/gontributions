@@ -8,18 +8,24 @@ import (
 	"github.com/jubalh/gontributions/vcs"
 )
 
+// Project hold all important information
+// about a project.
 type Project struct {
 	Name        string
 	Description string
-	Url         string
+	URL         string
 	Gitrepos    []string
 }
 
+// Configuration holds the users E-Mail adresses
+// and Projects he contributed to.
 type Configuration struct {
 	Emails   []string
 	Projects []Project
 }
 
+// Contribution hols the Projects the user
+// contributed to and a the ammounts of contributions
 type Contribution struct {
 	Project Project
 	Count   int
