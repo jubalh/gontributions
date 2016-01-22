@@ -9,6 +9,13 @@ import (
 	"github.com/jubalh/gontributions/vcs/mediawiki"
 )
 
+// MediaWiki holds the base URL of the wiki page to which later the
+// API call will get appended and the username to the wiki.
+type MediaWiki struct {
+	BaseUrl string
+	User    string
+}
+
 // Project hold all important information
 // about a project.
 type Project struct {
@@ -16,7 +23,7 @@ type Project struct {
 	Description string
 	URL         string
 	Gitrepos    []string
-	MediaWikis  []string
+	MediaWikis  []MediaWiki
 }
 
 // Configuration holds the users E-Mail adresses
@@ -60,10 +67,14 @@ func ScanContributions(configuration Configuration) []Contribution {
 			}
 		}
 		for _, wiki := range project.MediaWikis {
-			wikiCount, err := mediawiki.GetUserEdits(wiki, "jubalh")
+			wikiCount, err := mediawiki.GetUserEdits(wiki.BaseUrl, wiki.User)
 			if err != nil {
 				fmt.Fprintln(os.Stderr, err)
 			}
+
+			s := fmt.Sprintf("%d edits on %s MediaWiki as %s", wikiCount, wiki.BaseUrl, wiki.User)
+			util.PrintInfo(s)
+
 			sumCount += wikiCount
 		}
 		if sumCount > 0 {
