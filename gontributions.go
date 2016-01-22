@@ -12,6 +12,7 @@ import (
 
 	"github.com/codegangsta/cli"
 	"github.com/jubalh/gontributions/gontrib"
+	"github.com/jubalh/gontributions/util"
 )
 
 const (
@@ -63,7 +64,7 @@ func main() {
 	app.Flags = []cli.Flag{
 		cli.StringFlag{
 			Name:  "config",
-			Value: "config.json",
+			Value: "gontrib.json",
 			Usage: "Set which config file to use",
 		},
 		cli.StringFlag{
@@ -96,10 +97,9 @@ func run(cli *cli.Context) {
 	configPath := cli.GlobalString("config")
 	configuration, err := loadConfig(configPath)
 	if err != nil {
-		fmt.Println(err)
+		fmt.Fprintln(os.Stderr, err)
+		os.Exit(1)
 	}
-
-	contributions := gontrib.ScanContributions(configuration)
 
 	// Get users template selection
 	templateName := cli.GlobalString("template")
@@ -114,11 +114,17 @@ func run(cli *cli.Context) {
 		templatesPath = filepath.Join(templatesPath, templateFolderName)
 	}
 	absoluteTemplatePath := filepath.Join(templatesPath, templateName)
+	if !util.FileExists(absoluteTemplatePath) {
+		fmt.Fprintf(os.Stderr, "Template file %s does not exist\n", absoluteTemplatePath)
+		os.Exit(1)
+	}
+
+	contributions := gontrib.ScanContributions(configuration)
 
 	outputPath := cli.GlobalString("output")
 	f, err := os.Create(outputPath)
 	if err != nil {
-		fmt.Println(err)
+		fmt.Fprintln(os.Stderr, err)
 	}
 	defer f.Close()
 
@@ -134,13 +140,14 @@ func cmdExconf(c *cli.Context) {
 		Emails: []string{"jubalh@openmailbox.org", "g.bluehut@gmail.com"},
 		Projects: []gontrib.Project{
 			{Name: "nudoku", Description: "Ncurses sudoku game", Gitrepos: []string{"https://github.com/jubalh/nudoku"}},
-			{Name: "profanity", Description: "Ncurses based XMPP client", Gitrepos: []string{"https://github.com/boothj5/profanity"}},
+			{Name: "profanity", Description: "Ncurses based XMPP client", URL: "http://profanity.im/", Gitrepos: []string{"https://github.com/boothj5/profanity"}},
 		},
 	}
 
 	text, err := json.MarshalIndent(configuration, "", "    ")
 	if err != nil {
-		fmt.Println(err)
+		fmt.Fprintln(os.Stderr, err)
 	}
+
 	fmt.Println(string(text))
 }
