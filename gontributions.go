@@ -140,7 +140,7 @@ func cmdExconf(c *cli.Context) {
 		Emails: []string{"jubalh@openmailbox.org", "g.bluehut@gmail.com"},
 		Projects: []gontrib.Project{
 			{Name: "nudoku", Description: "Ncurses sudoku game", Gitrepos: []string{"https://github.com/jubalh/nudoku"}},
-			{Name: "profanity", Description: "Ncurses based XMPP client", Url: "http://profanity.im/", Gitrepos: []string{"https://github.com/boothj5/profanity"}},
+			{Name: "profanity", Description: "Ncurses based XMPP client", URL: "http://profanity.im/", Gitrepos: []string{"https://github.com/boothj5/profanity"}},
 		},
 	}
 
