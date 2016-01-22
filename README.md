@@ -37,18 +37,17 @@ The **GONTRIB_TEMPLATES_PTH** environment variable can be used to change the pat
 
 ## Features
 Search for commits in:
-- git
+- [x] git
+- [ ] svn
+- [ ] hg
+- [ ] bzr
+- [ ] obs
+
+- [ ] support to count Wiki edits
 
 Print out:
-- project name
-- description
-- number of commits
+- [x] project name
+- [x] description
+- [x] project URL
+- [x] number of commits
 
-## Todo
-Support more version control systems:
-- svn
-- hg
-- bzr
-- obs
-
-Add support to count Wiki edits
