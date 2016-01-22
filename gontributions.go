@@ -4,14 +4,23 @@ import (
 	"bufio"
 	"encoding/json"
 	"fmt"
-	"github.com/codegangsta/cli"
-	"github.com/jubalh/gontributions/gontrib"
 	"html/template"
 	"io"
 	"io/ioutil"
 	"os"
+	"path/filepath"
+
+	"github.com/codegangsta/cli"
+	"github.com/jubalh/gontributions/gontrib"
 )
 
+const (
+	templateFolderName = "templates"
+	templatesFolderEnv = "GONTRIB_TEMPLATES_PTH"
+)
+
+// loadConfig loads a json configuration from filename
+// and creates a Configuration from it.
 func loadConfig(filename string) (gontrib.Configuration, error) {
 	contribs := gontrib.Configuration{}
 
@@ -27,8 +36,10 @@ func loadConfig(filename string) (gontrib.Configuration, error) {
 	return contribs, nil
 }
 
-func fillTemplate(contributions []gontrib.Contribution, templateName string, writer io.Writer) {
-	t, err := template.ParseFiles("templates/" + templateName)
+// fillTemplate puts the information of a Contribution
+// into a template.
+func fillTemplate(contributions []gontrib.Contribution, templatePath string, writer io.Writer) {
+	t, err := template.ParseFiles(templatePath)
 	if err != nil {
 		fmt.Println(err)
 	}
@@ -39,6 +50,7 @@ func fillTemplate(contributions []gontrib.Contribution, templateName string, wri
 	}
 }
 
+// Main will set and parse the cli options.
 func main() {
 	app := cli.NewApp()
 
@@ -68,7 +80,7 @@ func main() {
 	app.Commands = []cli.Command{
 		{
 			Name:   "exconf",
-			Usage:  "Create an example config file",
+			Usage:  "Show an example configuration file",
 			Action: cmdExconf,
 		},
 	}
@@ -78,7 +90,9 @@ func main() {
 	app.Run(os.Args)
 }
 
+// Run will handle the functionallity.
 func run(cli *cli.Context) {
+	// Load specified json configuration file
 	configPath := cli.GlobalString("config")
 	configuration, err := loadConfig(configPath)
 	if err != nil {
@@ -87,7 +101,19 @@ func run(cli *cli.Context) {
 
 	contributions := gontrib.ScanContributions(configuration)
 
+	// Get users template selection
 	templateName := cli.GlobalString("template")
+
+	// Build path to template
+	templatesPath := os.Getenv(templatesFolderEnv)
+	if templatesPath == "" {
+		templatesPath, err = os.Getwd()
+		if err != nil {
+			panic(err)
+		}
+		templatesPath = filepath.Join(templatesPath, templateFolderName)
+	}
+	absoluteTemplatePath := filepath.Join(templatesPath, templateName)
 
 	outputPath := cli.GlobalString("output")
 	f, err := os.Create(outputPath)
@@ -97,18 +123,13 @@ func run(cli *cli.Context) {
 	defer f.Close()
 
 	writer := bufio.NewWriter(f)
-	fillTemplate(contributions, templateName, writer)
+	fillTemplate(contributions, absoluteTemplatePath, writer)
 	writer.Flush()
 }
 
+// Create an example configuration file which the user can
+// adapt to his own needs.
 func cmdExconf(c *cli.Context) {
-	f, err := os.Create("example_conf.json")
-	if err != nil {
-		fmt.Println(err)
-	}
-	defer f.Close()
-	writer := bufio.NewWriter(f)
-
 	configuration := gontrib.Configuration{
 		Emails: []string{"jubalh@openmailbox.org", "g.bluehut@gmail.com"},
 		Projects: []gontrib.Project{
@@ -121,6 +142,5 @@ func cmdExconf(c *cli.Context) {
 	if err != nil {
 		fmt.Println(err)
 	}
-	writer.Write(text)
-	writer.Flush()
+	fmt.Println(string(text))
 }
