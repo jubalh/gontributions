@@ -52,7 +52,7 @@ func ScanContributions(configuration Configuration) []Contribution {
 	for _, project := range configuration.Projects {
 		var sumCount int
 		for _, repo := range project.Gitrepos {
-			util.PrintInfo("Working on " + repo)
+			util.PrintInfo("Working on "+repo, util.PI_TASK)
 			git.GetLatestGitRepo(repo, false)
 			for _, email := range configuration.Emails {
 				count, err := git.CountCommits(repo, email)
@@ -61,19 +61,23 @@ func ScanContributions(configuration Configuration) []Contribution {
 				}
 
 				s := fmt.Sprintf("%s: %d commits", email, count)
-				util.PrintInfo(s)
+				util.PrintInfo(s, util.PI_RESULT)
 
 				sumCount += count
 			}
 		}
+
 		for _, wiki := range project.MediaWikis {
+			s := fmt.Sprintf("Working on MediaWiki %s as %s", wiki.BaseUrl, wiki.User)
+			util.PrintInfo(s, util.PI_TASK)
+
 			wikiCount, err := mediawiki.GetUserEdits(wiki.BaseUrl, wiki.User)
 			if err != nil {
 				fmt.Fprintln(os.Stderr, err)
 			}
 
-			s := fmt.Sprintf("%d edits on %s MediaWiki as %s", wikiCount, wiki.BaseUrl, wiki.User)
-			util.PrintInfo(s)
+			s = fmt.Sprintf("%d edits", wikiCount)
+			util.PrintInfo(s, util.PI_RESULT)
 
 			sumCount += wikiCount
 		}

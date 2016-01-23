@@ -6,6 +6,12 @@ import (
 	"strings"
 )
 
+const (
+	PI_INFO = iota
+	PI_TASK
+	PI_RESULT
+)
+
 // FileExists returns true if the file or directory exists
 // otherwise it will return false.
 func FileExists(path string) bool {
@@ -26,6 +32,15 @@ func LocalRepoName(url string) string {
 }
 
 // PrintInfo prints text with a marker to easily spot it.
-func PrintInfo(text string) {
-	fmt.Println("==> ", text)
+func PrintInfo(text string, mode int) {
+	var pre string
+	switch {
+	case mode == PI_INFO:
+		pre = ""
+	case mode == PI_TASK:
+		pre = "* "
+	case mode == PI_RESULT:
+		pre = "==> "
+	}
+	fmt.Println(pre + text)
 }
