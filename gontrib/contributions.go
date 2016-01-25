@@ -8,14 +8,8 @@ import (
 	"github.com/jubalh/gontributions/util"
 	"github.com/jubalh/gontributions/vcs/git"
 	"github.com/jubalh/gontributions/vcs/mediawiki"
+	"github.com/jubalh/gontributions/vcs/obs"
 )
-
-// MediaWiki holds the base URL of the wiki page to which later the
-// API call will get appended and the username to the wiki.
-type MediaWiki struct {
-	BaseUrl string
-	User    string
-}
 
 // Project hold all important information
 // about a project.
@@ -24,7 +18,8 @@ type Project struct {
 	Description string
 	URL         string
 	Gitrepos    []string
-	MediaWikis  []MediaWiki
+	MediaWikis  []mediawiki.MediaWiki
+	Obs         []obs.OpenBuildService
 }
 
 // Configuration holds the users E-Mail adresses
@@ -49,6 +44,7 @@ func ScanContributions(configuration Configuration) []Contribution {
 	contributions := []Contribution{}
 
 	os.Mkdir("repos", 0755)
+	os.Mkdir("repos-ob", 0755)
 
 	for _, project := range configuration.Projects {
 		var sumCount int
@@ -56,15 +52,17 @@ func ScanContributions(configuration Configuration) []Contribution {
 			util.PrintInfo("Working on "+repo, util.PI_TASK)
 			git.GetLatestGitRepo(repo)
 			for _, email := range configuration.Emails {
-				path := filepath.Join("repos", util.LocalRepoName(repo))
-				count, err := git.CountCommits(path, email)
+				path := filepath.Join("repos-git", util.LocalRepoName(repo))
+				gitCount, err := git.CountCommits(path, email)
 				if err != nil {
 					fmt.Println(err)
 				}
 
-				util.PrintInfoF("%s: %d commits", util.PI_RESULT, email, count)
+				if gitCount != 0 {
+					util.PrintInfoF("%s: %d commits", util.PI_RESULT, email, gitCount)
+					sumCount += gitCount
+				}
 
-				sumCount += count
 			}
 		}
 
@@ -76,9 +74,35 @@ func ScanContributions(configuration Configuration) []Contribution {
 				fmt.Fprintln(os.Stderr, err)
 			}
 
-			util.PrintInfoF("%d edits", util.PI_RESULT, wikiCount)
+			if wikiCount != 0 {
+				util.PrintInfoF("%d edits", util.PI_RESULT, wikiCount)
+				sumCount += wikiCount
+			}
+		}
 
-			sumCount += wikiCount
+	Loop_obs:
+		for _, obsEntry := range project.Obs {
+			util.PrintInfo("Working on "+obsEntry.Repo, util.PI_TASK)
+
+			err := obs.GetLatestRepo(obsEntry)
+			if err != nil {
+				fmt.Fprintln(os.Stderr, err)
+			}
+			for _, email := range configuration.Emails {
+				obsCount, err := obs.CountCommits("repos-obs"+"/"+obsEntry.Repo, email)
+				if err != nil {
+					if err == obs.ErrNoChangesFileFound {
+						util.PrintInfo("No .changes file found", util.PI_RESULT)
+						break Loop_obs
+					}
+					fmt.Fprintln(os.Stderr, err)
+				}
+
+				if obsCount != 0 {
+					util.PrintInfoF("%s: %d changes", util.PI_RESULT, email, obsCount)
+					sumCount += obsCount
+				}
+			}
 		}
 
 		if sumCount > 0 {

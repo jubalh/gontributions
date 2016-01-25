@@ -27,9 +27,9 @@ func GetLatestGitRepo(url string) error {
 
 	local = util.LocalRepoName(url)
 
-	rd := RepoData{url: url, workingDirectory: "repos", localName: local}
+	rd := RepoData{url: url, workingDirectory: "repos-git", localName: local}
 
-	if util.FileExists(filepath.Join("repos", local)) {
+	if util.FileExists(filepath.Join("repos-git", local)) {
 		err = updateRepo(rd)
 	} else {
 		err = cloneRepo(rd)
@@ -74,7 +74,6 @@ func updateRepo(rd RepoData) error {
 // CountCommits returns how often email occurs in the log for
 // the git repository at url.
 func CountCommits(path string, email string) (int, error) {
-
 	authorSwitch := "--author=" + email
 	cmd := exec.Command("git", "log", "--pretty=tformat:%s", authorSwitch)
 	cmd.Dir = path

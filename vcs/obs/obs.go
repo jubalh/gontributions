@@ -1,0 +1,75 @@
+package obs
+
+import (
+	"bytes"
+	"errors"
+	"io/ioutil"
+	"os"
+	"os/exec"
+	"path/filepath"
+	"strings"
+)
+
+// ErrNoChangesFileFound is an error used when there is no .changes file
+// in an OpenBuildService directory.
+var ErrNoChangesFileFound = errors.New("No .changes file found")
+
+// OpenBuildService holds the API URL to the open build service instance and the
+// repository name
+type OpenBuildService struct {
+	Apiurl string
+	Repo   string
+}
+
+// GetLatestRepo gets the newest version of an OpenBuildService
+// repository.
+func GetLatestRepo(info OpenBuildService) error {
+	//TODO: implement check if repo does not exist
+	//then we should throw an error and abort so not getting to
+	//CountCommits
+	cmd := exec.Command("osc", "-A", info.Apiurl, "co", info.Repo)
+	cmd.Dir = "repos-obs"
+	cmdOutput := &bytes.Buffer{}
+	cmd.Stdout = cmdOutput
+	err := cmd.Run()
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+// CountCommits returns the number of commits in the OpenBuildService
+// repository saved at path for email.
+// It returns ErrNoChangesFileFound error in case it couldnt locate any
+// .changes file And forwards other errors that might occur.
+func CountCommits(path string, email string) (int, error) {
+	var changesFile string
+	//search for a file ending in '.changes'
+	err := filepath.Walk(path, func(path string, info os.FileInfo, err error) error {
+		if info.IsDir() && info.Name() == ".osc" {
+			return filepath.SkipDir
+		}
+		//fmt.Println("Walking", path)
+		if strings.HasSuffix(path, ".changes") {
+			changesFile = path
+			return filepath.SkipDir
+		}
+		return err
+	})
+	if err != nil && err != filepath.SkipDir {
+		return 0, err
+	}
+
+	if changesFile == "" {
+		return 0, ErrNoChangesFileFound //TODO: can we add the filename here?
+	}
+	//fmt.Println("Using", changesFile)
+
+	changes, err := ioutil.ReadFile(changesFile)
+	if err != nil {
+		return 0, err
+	}
+
+	// for now just count how often the mail occurs
+	return strings.Count(string(changes), email), nil
+}

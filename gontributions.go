@@ -13,6 +13,7 @@ import (
 	"github.com/codegangsta/cli"
 	"github.com/jubalh/gontributions/gontrib"
 	"github.com/jubalh/gontributions/util"
+	"github.com/jubalh/gontributions/vcs/mediawiki"
 )
 
 const (
@@ -143,7 +144,7 @@ func cmdExconf(c *cli.Context) {
 		Projects: []gontrib.Project{
 			{Name: "nudoku", Description: "Ncurses sudoku game", Gitrepos: []string{"https://github.com/jubalh/nudoku"}},
 			{Name: "profanity", Description: "Ncurses based XMPP client", URL: "http://profanity.im/", Gitrepos: []string{"https://github.com/boothj5/profanity"}},
-			{Name: "Funtoo", Description: "Linux distribution", URL: "http://funtoo.org/", Gitrepos: []string{"https://github.com/funtoo/ego", "https://github.com/funtoo/metro"}, MediaWikis: []gontrib.MediaWiki{{BaseUrl: "http://funtoo.org", User: "jubalh"}}},
+			{Name: "Funtoo", Description: "Linux distribution", URL: "http://funtoo.org/", Gitrepos: []string{"https://github.com/funtoo/ego", "https://github.com/funtoo/metro"}, MediaWikis: []mediawiki.MediaWiki{{BaseUrl: "http://funtoo.org", User: "jubalh"}}},
 		},
 	}
 

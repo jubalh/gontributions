@@ -7,6 +7,13 @@ import (
 	"net/http"
 )
 
+// MediaWiki holds the base URL of the wiki page to which later the
+// API call will get appended and the username to the wiki.
+type MediaWiki struct {
+	BaseUrl string
+	User    string
+}
+
 // User field in MediaWikis response
 type User struct {
 	Id    int `json:"userid"`
