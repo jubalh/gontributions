@@ -132,8 +132,7 @@ func run(cli *cli.Context) {
 	fillTemplate(contributions, absoluteTemplatePath, writer)
 	writer.Flush()
 
-	s := fmt.Sprintf("\nReport saved in: %s", outputPath)
-	util.PrintInfo(s, util.PI_INFO)
+	util.PrintInfoF("\nReport saved in: %s", util.PI_INFO, outputPath)
 }
 
 // Create an example configuration file which the user can

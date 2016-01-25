@@ -62,27 +62,25 @@ func ScanContributions(configuration Configuration) []Contribution {
 					fmt.Println(err)
 				}
 
-				s := fmt.Sprintf("%s: %d commits", email, count)
-				util.PrintInfo(s, util.PI_RESULT)
+				util.PrintInfoF("%s: %d commits", util.PI_RESULT, email, count)
 
 				sumCount += count
 			}
 		}
 
 		for _, wiki := range project.MediaWikis {
-			s := fmt.Sprintf("Working on MediaWiki %s as %s", wiki.BaseUrl, wiki.User)
-			util.PrintInfo(s, util.PI_TASK)
+			util.PrintInfoF("Working on MediaWiki %s as %s", util.PI_TASK, wiki.BaseUrl, wiki.User)
 
 			wikiCount, err := mediawiki.GetUserEdits(wiki.BaseUrl, wiki.User)
 			if err != nil {
 				fmt.Fprintln(os.Stderr, err)
 			}
 
-			s = fmt.Sprintf("%d edits", wikiCount)
-			util.PrintInfo(s, util.PI_RESULT)
+			util.PrintInfoF("%d edits", util.PI_RESULT, wikiCount)
 
 			sumCount += wikiCount
 		}
+
 		if sumCount > 0 {
 			c := Contribution{project, sumCount}
 			contributions = append(contributions, c)

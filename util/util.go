@@ -44,3 +44,8 @@ func PrintInfo(text string, mode int) {
 	}
 	fmt.Println(pre + text)
 }
+
+// PrintInfo prints formatable text with a marker to easily spot it.
+func PrintInfoF(text string, mode int, args ...interface{}) {
+	PrintInfo(fmt.Sprintf(text, args...), mode)
+}
