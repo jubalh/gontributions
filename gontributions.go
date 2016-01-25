@@ -58,7 +58,7 @@ func main() {
 	app.Name = "gontributions"
 	app.Usage = "contributions lister"
 	app.Author = "Michael Vetter"
-	app.Version = "0.1"
+	app.Version = "0.2"
 	app.Email = "jubalh@openmailbox.org"
 
 	app.Flags = []cli.Flag{

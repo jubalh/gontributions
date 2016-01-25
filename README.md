@@ -43,11 +43,11 @@ Search for commits in:
 - [ ] bzr
 - [ ] obs
 
-- [ ] support to count Wiki edits
+- [x] support to count Wiki edits
 
-Print out:
+Display:
 - [x] project name
 - [x] description
 - [x] project URL
-- [x] number of commits
+- [x] number of commits/contributions
 
