@@ -3,6 +3,7 @@ package gontrib
 import (
 	"fmt"
 	"os"
+	"path/filepath"
 
 	"github.com/jubalh/gontributions/util"
 	"github.com/jubalh/gontributions/vcs/git"
@@ -53,9 +54,10 @@ func ScanContributions(configuration Configuration) []Contribution {
 		var sumCount int
 		for _, repo := range project.Gitrepos {
 			util.PrintInfo("Working on "+repo, util.PI_TASK)
-			git.GetLatestGitRepo(repo, false)
+			git.GetLatestGitRepo(repo)
 			for _, email := range configuration.Emails {
-				count, err := git.CountCommits(repo, email)
+				path := filepath.Join("repos", util.LocalRepoName(repo))
+				count, err := git.CountCommits(path, email)
 				if err != nil {
 					fmt.Println(err)
 				}

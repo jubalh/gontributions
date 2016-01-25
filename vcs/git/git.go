@@ -3,9 +3,11 @@ package git
 import (
 	"bytes"
 	"fmt"
-	"github.com/jubalh/gontributions/util"
 	"os/exec"
+	"path/filepath"
 	"strings"
+
+	"github.com/jubalh/gontributions/util"
 )
 
 // RepoData holds the URL of a repository,
@@ -19,19 +21,15 @@ type RepoData struct {
 
 // GetLatestGitRepo either clones a new repo or updates an existing one
 // into the 'repos' directory.
-func GetLatestGitRepo(url string, isTest bool) error {
+func GetLatestGitRepo(url string) error {
 	var err error
 	var local string
 
-	if isTest {
-		local = "dummy-git-repo"
-	} else {
-		local = util.LocalRepoName(url)
-	}
+	local = util.LocalRepoName(url)
 
 	rd := RepoData{url: url, workingDirectory: "repos", localName: local}
 
-	if util.FileExists("repos/" + local) {
+	if util.FileExists(filepath.Join("repos", local)) {
 		err = updateRepo(rd)
 	} else {
 		err = cloneRepo(rd)
@@ -42,6 +40,8 @@ func GetLatestGitRepo(url string, isTest bool) error {
 // cloneRepo takes a RepoData struct and clones the repository
 // specified in rd.
 func cloneRepo(rd RepoData) error {
+	//fmt.Printf("Running 'git clone %s %s' in %s\n", rd.url, rd.localName, rd.workingDirectory)
+
 	cmd := exec.Command("git", "clone", rd.url, rd.localName)
 	cmd.Dir = rd.workingDirectory
 	cmdOutput := &bytes.Buffer{}
@@ -59,7 +59,7 @@ func cloneRepo(rd RepoData) error {
 // specified in rd.
 func updateRepo(rd RepoData) error {
 	cmd := exec.Command("git", "update")
-	cmd.Dir = rd.workingDirectory + "/" + rd.localName
+	cmd.Dir = filepath.Join(rd.workingDirectory, rd.localName)
 	cmdOutput := &bytes.Buffer{}
 	cmd.Stdout = cmdOutput
 	err := cmd.Run()
@@ -73,12 +73,11 @@ func updateRepo(rd RepoData) error {
 
 // CountCommits returns how often email occurs in the log for
 // the git repository at url.
-func CountCommits(url string, email string) (int, error) {
-	local := util.LocalRepoName(url)
+func CountCommits(path string, email string) (int, error) {
 
 	authorSwitch := "--author=" + email
 	cmd := exec.Command("git", "log", "--pretty=tformat:%s", authorSwitch)
-	cmd.Dir = "repos/" + local
+	cmd.Dir = path
 	cmdOutput := &bytes.Buffer{}
 	cmd.Stdout = cmdOutput
 	err := cmd.Run()
