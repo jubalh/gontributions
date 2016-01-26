@@ -11,7 +11,7 @@ You need to create a json file containing your open source contributions. The fo
 Create an example json configuration and adapt the example to your needs:
 
 ```
-gontributions exconf
+gontributions exconf > example_conf.json
 vi example_conf.json
 ```
 
