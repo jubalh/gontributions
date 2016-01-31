@@ -41,8 +41,8 @@ func loadConfig(filename string) (gontrib.Configuration, error) {
 
 // fillTemplate puts the information of a Contribution
 // into a template.
-func fillTemplate(contributions []gontrib.Contribution, templatePath string, writer io.Writer) {
-	t, err := template.ParseFiles(templatePath)
+func fillTemplate(contributions []gontrib.Contribution, tempContent string, writer io.Writer) {
+	t, err := template.New("string-template").Parse(tempContent)
 	if err != nil {
 		fmt.Println(err)
 	}
@@ -52,6 +52,8 @@ func fillTemplate(contributions []gontrib.Contribution, templatePath string, wri
 		fmt.Println(err)
 	}
 }
+
+//go:generate go-bindata -pkg main -o default-templates-bindata.go templates/
 
 // Main will set and parse the cli options.
 func main() {
@@ -106,19 +108,31 @@ func run(cli *cli.Context) {
 	// Get users template selection
 	templateName := cli.GlobalString("template")
 
-	// Build path to template
+	var templateData string
+
+	// Get Template as templateData string
 	templatesPath := os.Getenv(templatesFolderEnv)
 	if templatesPath == "" {
-		templatesPath, err = os.Getwd()
+		// Use asset
+		data, err := Asset(filepath.Join(templateFolderName, templateName))
 		if err != nil {
-			panic(err)
+			fmt.Fprintln(os.Stderr, err)
+			os.Exit(1)
 		}
-		templatesPath = filepath.Join(templatesPath, templateFolderName)
-	}
-	absoluteTemplatePath := filepath.Join(templatesPath, templateName)
-	if !util.FileExists(absoluteTemplatePath) {
-		fmt.Fprintf(os.Stderr, "Template file %s does not exist\n", absoluteTemplatePath)
-		os.Exit(1)
+		templateData = string(data)
+	} else {
+		// Use template from user defined folder
+		absoluteTemplatePath := filepath.Join(templatesPath, templateName)
+		if !util.FileExists(absoluteTemplatePath) {
+			fmt.Fprintf(os.Stderr, "Template file %s does not exist\n", absoluteTemplatePath)
+			os.Exit(1)
+		}
+		data, err := ioutil.ReadFile(absoluteTemplatePath)
+		if err != nil {
+			fmt.Fprintln(os.Stderr, err)
+			os.Exit(1)
+		}
+		templateData = string(data)
 	}
 
 	contributions := gontrib.ScanContributions(configuration)
@@ -131,7 +145,7 @@ func run(cli *cli.Context) {
 	defer f.Close()
 
 	writer := bufio.NewWriter(f)
-	fillTemplate(contributions, absoluteTemplatePath, writer)
+	fillTemplate(contributions, templateData, writer)
 	writer.Flush()
 
 	util.PrintInfoF("\nReport saved in: %s", util.PI_INFO, outputPath)
