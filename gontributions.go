@@ -14,6 +14,7 @@ import (
 	"github.com/jubalh/gontributions/gontrib"
 	"github.com/jubalh/gontributions/util"
 	"github.com/jubalh/gontributions/vcs/mediawiki"
+	"github.com/jubalh/gontributions/vcs/obs"
 )
 
 const (
@@ -59,7 +60,7 @@ func main() {
 	app.Name = "gontributions"
 	app.Usage = "contributions lister"
 	app.Author = "Michael Vetter"
-	app.Version = "0.2"
+	app.Version = "0.3"
 	app.Email = "jubalh@openmailbox.org"
 
 	app.Flags = []cli.Flag{
@@ -145,6 +146,7 @@ func cmdExconf(c *cli.Context) {
 			{Name: "nudoku", Description: "Ncurses sudoku game", Gitrepos: []string{"https://github.com/jubalh/nudoku"}},
 			{Name: "profanity", Description: "Ncurses based XMPP client", URL: "http://profanity.im/", Gitrepos: []string{"https://github.com/boothj5/profanity"}},
 			{Name: "Funtoo", Description: "Linux distribution", URL: "http://funtoo.org/", Gitrepos: []string{"https://github.com/funtoo/ego", "https://github.com/funtoo/metro"}, MediaWikis: []mediawiki.MediaWiki{{BaseUrl: "http://funtoo.org", User: "jubalh"}}},
+			{Name: "openSUSE", Description: "Linux distribution", URL: "http://opensuse.org/", Obs: []obs.OpenBuildService{{Apiurl: "https://api.opensuse.org", Repo: "utilities/vifm"}}},
 		},
 	}
 

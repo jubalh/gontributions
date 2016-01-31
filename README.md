@@ -37,11 +37,11 @@ The **GONTRIB_TEMPLATES_PTH** environment variable can be used to change the pat
 
 ## Features
 Search for commits in:
-- [x] git
-- [ ] svn
-- [ ] hg
-- [ ] bzr
-- [ ] obs
+- [x] Git
+- [ ] Subversion
+- [ ] Mercurial
+- [ ] Bazaar
+- [x] Open Build Service
 
 - [x] support to count Wiki edits
 
