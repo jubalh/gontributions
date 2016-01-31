@@ -43,14 +43,14 @@ type Contribution struct {
 func ScanContributions(configuration Configuration) []Contribution {
 	contributions := []Contribution{}
 
-	os.Mkdir("repos", 0755)
-	os.Mkdir("repos-ob", 0755)
+	os.Mkdir("repos-git", 0755)
+	os.Mkdir("repos-obs", 0755)
 
 	for _, project := range configuration.Projects {
 		var sumCount int
 		for _, repo := range project.Gitrepos {
 			util.PrintInfo("Working on "+repo, util.PI_TASK)
-			git.GetLatestGitRepo(repo)
+			git.GetLatestRepo(repo)
 			for _, email := range configuration.Emails {
 				path := filepath.Join("repos-git", util.LocalRepoName(repo))
 				gitCount, err := git.CountCommits(path, email)

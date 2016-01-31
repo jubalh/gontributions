@@ -19,9 +19,9 @@ type RepoData struct {
 	localName        string
 }
 
-// GetLatestGitRepo either clones a new repo or updates an existing one
+// GetLatestRepo either clones a new repo or updates an existing one
 // into the 'repos' directory.
-func GetLatestGitRepo(url string) error {
+func GetLatestRepo(url string) error {
 	var err error
 	var local string
 

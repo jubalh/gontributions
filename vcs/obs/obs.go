@@ -8,6 +8,8 @@ import (
 	"os/exec"
 	"path/filepath"
 	"strings"
+
+	"github.com/jubalh/gontributions/util"
 )
 
 // ErrNoChangesFileFound is an error used when there is no .changes file
@@ -24,18 +26,33 @@ type OpenBuildService struct {
 // GetLatestRepo gets the newest version of an OpenBuildService
 // repository.
 func GetLatestRepo(info OpenBuildService) error {
-	//TODO: implement check if repo does not exist
-	//then we should throw an error and abort so not getting to
-	//CountCommits
+	var err error
+	if util.FileExists(filepath.Join("repos-obs", info.Repo)) {
+		err = updateRepo(info)
+	} else {
+		err = checkoutRepo(info)
+	}
+	return err
+}
+
+// checkoutRepo checks out a new OBS repo.
+func checkoutRepo(info OpenBuildService) error {
 	cmd := exec.Command("osc", "-A", info.Apiurl, "co", info.Repo)
 	cmd.Dir = "repos-obs"
 	cmdOutput := &bytes.Buffer{}
 	cmd.Stdout = cmdOutput
 	err := cmd.Run()
-	if err != nil {
-		return err
-	}
-	return nil
+	return err
+}
+
+// updateRepo gets the latest changes from an existing OBS repo.
+func updateRepo(info OpenBuildService) error {
+	cmd := exec.Command("osc", "up")
+	cmd.Dir = filepath.Join("repos-obs", info.Repo)
+	cmdOutput := &bytes.Buffer{}
+	cmd.Stdout = cmdOutput
+	err := cmd.Run()
+	return err
 }
 
 // CountCommits returns the number of commits in the OpenBuildService
