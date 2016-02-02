@@ -58,7 +58,7 @@ func cloneRepo(rd RepoData) error {
 // updateRepo takes a RepoData struct and updates the repository
 // specified in rd.
 func updateRepo(rd RepoData) error {
-	cmd := exec.Command("git", "update")
+	cmd := exec.Command("git", "pull")
 	cmd.Dir = filepath.Join(rd.workingDirectory, rd.localName)
 	cmdOutput := &bytes.Buffer{}
 	cmd.Stdout = cmdOutput
