@@ -60,7 +60,7 @@ func updateRepo(info OpenBuildService) error {
 // It returns ErrNoChangesFileFound error in case it couldnt locate any
 // .changes file And forwards other errors that might occur.
 func CountCommits(path string, email string) (int, error) {
-	var changesFile string
+	var changesFiles []string
 	//search for a file ending in '.changes'
 	err := filepath.Walk(path, func(path string, info os.FileInfo, err error) error {
 		if info.IsDir() && info.Name() == ".osc" {
@@ -68,8 +68,7 @@ func CountCommits(path string, email string) (int, error) {
 		}
 		//fmt.Println("Walking", path)
 		if strings.HasSuffix(path, ".changes") {
-			changesFile = path
-			return filepath.SkipDir
+			changesFiles = append(changesFiles, path)
 		}
 		return err
 	})
@@ -77,16 +76,21 @@ func CountCommits(path string, email string) (int, error) {
 		return 0, err
 	}
 
-	if changesFile == "" {
+	if len(changesFiles) == 0 {
 		return 0, ErrNoChangesFileFound //TODO: can we add the filename here?
 	}
 	//fmt.Println("Using", changesFile)
 
-	changes, err := ioutil.ReadFile(changesFile)
-	if err != nil {
-		return 0, err
+	var count int
+	for i := 0; i < len(changesFiles); i++ {
+		changesFile := changesFiles[i]
+		changes, err := ioutil.ReadFile(changesFile)
+		if err != nil {
+			return 0, err
+		}
+		// for now just count how often the mail occurs
+		count += strings.Count(string(changes), email)
 	}
 
-	// for now just count how often the mail occurs
-	return strings.Count(string(changes), email), nil
+	return count, nil
 }
