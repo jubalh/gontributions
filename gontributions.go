@@ -1,3 +1,4 @@
+//go:generate go-bindata -pkg main -o default-templates-bindata.go templates/
 package main
 
 import (
@@ -52,8 +53,6 @@ func fillTemplate(contributions []gontrib.Contribution, tempContent string, writ
 		fmt.Println(err)
 	}
 }
-
-//go:generate go-bindata -pkg main -o default-templates-bindata.go templates/
 
 // Main will set and parse the cli options.
 func main() {
