@@ -143,7 +143,9 @@ func run(cli *cli.Context) {
 
 	writer := bufio.NewWriter(f)
 	fillTemplate(contributions, templateData, writer)
-	writer.Flush()
+	if err := writer.Flush(); err != nil {
+		fmt.Fprintln(os.Stderr, err)
+	}
 
 	util.PrintInfoF("\nReport saved in: %s", util.PI_INFO, outputPath)
 }
