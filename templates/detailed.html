@@ -11,8 +11,10 @@
 		<b>{{ .Project.Name }}</b>
 		{{ end }}
 				<br/>
+				{{ if .Project.Description }}
 				{{ .Project.Description }}
 				<br/>
+				{{ end }}
 				{{ .Count }} contributions
 				<br/>
 				<br/>
