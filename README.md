@@ -67,19 +67,26 @@ Furthermore: if someone deletes a repository you contributed to, you still have 
 **But there is 'GitHub Contributions'!**
 
 Right. There is. But:
-1. It only displays contributions in a certain timeframe, you have no control over it.
-2. It works only for GitHub. What about your contributions hosted at GitLab, BitBucket or on sourceforge?
-3. What about your non-git Contributions? Like wiki edits, subversion commits etc.
+
+- It only displays contributions in a certain timeframe, you have no control over it.
+- It works only for GitHub. What about your contributions hosted at GitLab, BitBucket or on sourceforge?
+- What about your non-git Contributions? Like wiki edits, subversion commits etc.
 
 **But there is Ohloh/Open Hub!**
 
 Right. There is. But:
+
 - The service hangs often so you need to ping admins to restart the scanning tool.
 - You rely on a service you don't have much control over
 - See about deleted repos above.
 
 **What else is cool about it?**
 
-Quite a few people use their personal website as their resume.
+Quite a few people use their personal website as their resume.  
 With this tool you can add an overview of the work you did and you can adjust the look and feel to the rest of your website.
 If you rely on Open Hub it will always look like Open Hub, if you create your own *template* for *gontributions* your report has totally your touch.
+
+**Can I see such a report please?**
+
+Glad you ask. Of course you can!  
+Take a look at [mine](http://iodoru.org/gontrib).
