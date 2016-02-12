@@ -25,19 +25,15 @@ const (
 
 // loadConfig loads a json configuration from filename
 // and creates a Configuration from it.
-func loadConfig(filename string) (gontrib.Configuration, error) {
-	contribs := gontrib.Configuration{}
-
-	s, err := ioutil.ReadFile(filename)
+func loadConfig(filename string) (gontribs gontrib.Configuration, err error) {
+	file, err := os.OpenFile(filename, os.O_RDONLY, 0660)
 	if err != nil {
-		return contribs, err
-	}
-	err = json.Unmarshal(s, &contribs)
-	if err != nil {
-		return contribs, err
+		return
 	}
 
-	return contribs, nil
+	decoder := json.NewDecoder(file)
+	err = decoder.Decode(&gontribs)
+	return
 }
 
 // fillTemplate puts the information of a Contribution
@@ -45,12 +41,14 @@ func loadConfig(filename string) (gontrib.Configuration, error) {
 func fillTemplate(contributions []gontrib.Contribution, tempContent string, writer io.Writer) {
 	t, err := template.New("string-template").Parse(tempContent)
 	if err != nil {
-		fmt.Println(err)
+		fmt.Fprintln(os.Stderr, err)
+		os.Exit(1)
 	}
-	//err = t.Execute(os.Stdout, contributions)
+
 	err = t.Execute(writer, contributions)
 	if err != nil {
-		fmt.Println(err)
+		fmt.Fprintln(os.Stderr, err)
+		os.Exit(1)
 	}
 }
 

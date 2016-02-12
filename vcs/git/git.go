@@ -21,8 +21,7 @@ type RepoData struct {
 
 // GetLatestRepo either clones a new repo or updates an existing one
 // into the 'repos' directory.
-func GetLatestRepo(url string) error {
-	var err error
+func GetLatestRepo(url string) (err error) {
 	var local string
 
 	local = util.LocalRepoName(url)
@@ -34,7 +33,7 @@ func GetLatestRepo(url string) error {
 	} else {
 		err = cloneRepo(rd)
 	}
-	return err
+	return
 }
 
 // cloneRepo takes a RepoData struct and clones the repository
@@ -47,12 +46,9 @@ func cloneRepo(rd RepoData) error {
 	cmdOutput := &bytes.Buffer{}
 	cmd.Stdout = cmdOutput
 	err := cmd.Run()
-	if err != nil {
-		return err
-	}
 
-	fmt.Print(cmdOutput)
-	return nil
+	fmt.Print(cmdOutput) //TODO: do we want it?
+	return err
 }
 
 // updateRepo takes a RepoData struct and updates the repository
@@ -63,27 +59,24 @@ func updateRepo(rd RepoData) error {
 	cmdOutput := &bytes.Buffer{}
 	cmd.Stdout = cmdOutput
 	err := cmd.Run()
-	if err != nil {
-		return err
-	}
 
-	fmt.Print(cmdOutput)
-	return nil
+	fmt.Print(cmdOutput) //TODO: do we want it?
+	return err
 }
 
 // CountCommits returns how often email occurs in the log for
 // the git repository at url.
-func CountCommits(path string, email string) (int, error) {
+func CountCommits(path string, email string) (count int, err error) {
 	authorSwitch := "--author=" + email
 	cmd := exec.Command("git", "log", "--pretty=tformat:%s", authorSwitch)
 	cmd.Dir = path
 	cmdOutput := &bytes.Buffer{}
 	cmd.Stdout = cmdOutput
-	err := cmd.Run()
+	err = cmd.Run()
 	if err != nil {
-		return 0, err
+		return
 	}
-	//fmt.Println(strings.Join(cmd.Args, " ") + " in " + cmd.Dir)
-	s := (string(cmdOutput.Bytes()))
-	return strings.Count(s, "\n"), nil
+
+	count = strings.Count((string(cmdOutput.Bytes())), "\n")
+	return
 }

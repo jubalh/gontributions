@@ -2,9 +2,9 @@ package mediawiki
 
 import (
 	"encoding/json"
-	"fmt"
-	"io/ioutil"
+	"errors"
 	"net/http"
+	"net/url"
 )
 
 // MediaWiki holds the base URL of the wiki page to which later the
@@ -26,27 +26,38 @@ type Query struct {
 	Users []User `json:"users"`
 }
 
-//MediaWikis response
-type Response struct {
-	Query Query
-}
-
 // GetUserEdits calls wikiUrl MediaWiki API to retrieve the number of edits
 // the user username has done.
-func GetUserEdits(wikiUrl string, username string) (int, error) {
-	request := fmt.Sprintf("%s/api.php?action=query&list=users&format=json&usprop=editcount&ususers=%s", wikiUrl, username)
-	resp, err := http.Get(request)
+func GetUserEdits(wikiUrl string, username string) (count int, err error) {
+	wikiURL, err := url.Parse(wikiUrl)
+	wikiURL.Path += "/api.php"
+	parameters := url.Values{}
+	parameters.Add("action", "query")
+	parameters.Add("list", "users")
+	parameters.Add("format", "json")
+	parameters.Add("usprop", "editcount")
+	parameters.Add("ususers", username)
+	wikiURL.RawQuery = parameters.Encode()
+
+	resp, err := http.Get(wikiURL.String())
 	if err != nil {
-		return 0, err
+		return
+	}
+	defer resp.Body.Close()
+
+	// MediaWikis response as anon struct
+	var response struct {
+		Query Query
 	}
 
-	body, err := ioutil.ReadAll(resp.Body)
-	if err != nil {
-		return 0, err
+	decoder := json.NewDecoder(resp.Body)
+	err = decoder.Decode(&response)
+
+	if len(response.Query.Users) > 0 {
+		count = response.Query.Users[0].Edits
+	} else {
+		err = errors.New("Did not get a 'user' returned")
 	}
 
-	var r Response
-	json.Unmarshal(body, &r)
-
-	return r.Query.Users[0].Edits, nil
+	return
 }

@@ -55,7 +55,8 @@ func ScanContributions(configuration Configuration) []Contribution {
 				path := filepath.Join("repos-git", util.LocalRepoName(repo))
 				gitCount, err := git.CountCommits(path, email)
 				if err != nil {
-					fmt.Println(err)
+					fmt.Fprintln(os.Stderr, err)
+					os.Exit(1)
 				}
 
 				if gitCount != 0 {
@@ -87,6 +88,7 @@ func ScanContributions(configuration Configuration) []Contribution {
 			err := obs.GetLatestRepo(obsEntry)
 			if err != nil {
 				fmt.Fprintln(os.Stderr, err)
+				os.Exit(1)
 			}
 			for _, email := range configuration.Emails {
 				obsCount, err := obs.CountCommits("repos-obs"+"/"+obsEntry.Repo, email)
