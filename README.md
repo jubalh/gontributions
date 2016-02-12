@@ -51,3 +51,35 @@ Display:
 - [x] project URL
 - [x] number of commits/contributions
 
+## Contribute
+There are some features that would be nice to have, but i don't need them myself. I created [issues](https://github.com/jubalh/gontributions/issues) about them.
+Feel free to work on them or implement your own ideas.
+
+I try to have the `master` branch clear and only have working versions there. Please work on the `develop` branch and create a new `feature/count-my-hair` for every feature you implement.
+
+## FAQ
+**Does it have to be Open Source?**
+
+You could also add private repositories and just publish the finished report. Noone will learn about the location of the repos, your precious commits or your username. Still you would have a nice overview of what you did.
+
+Furthermore: if someone deletes a repository you contributed to, you still have your local copy if you use *gontributions* which will count into your contributions report. If we would just query some remote server you don't have any control over it. When it's deleted it's just gone. And your work lost.
+
+**But there is 'GitHub Contributions'!**
+
+Right. There is. But:
+1. It only displays contributions in a certain timeframe, you have no control over it.
+2. It works only for GitHub. What about your contributions hosted at GitLab, BitBucket or on sourceforge?
+3. What about your non-git Contributions? Like wiki edits, subversion commits etc.
+
+**But there is Ohloh/Open Hub!**
+
+Right. There is. But:
+- The service hangs often so you need to ping admins to restart the scanning tool.
+- You rely on a service you don't have much control over
+- See about deleted repos above.
+
+**What else is cool about it?**
+
+Quite a few people use their personal website as their resume.
+With this tool you can add an overview of the work you did and you can adjust the look and feel to the rest of your website.
+If you rely on Open Hub it will always look like Open Hub, if you create your own *template* for *gontributions* your report has totally your touch.
