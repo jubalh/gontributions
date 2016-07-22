@@ -22,6 +22,19 @@ func FileExists(path string) bool {
 	return true
 }
 
+// BinaryInstalled checks whether binary exists in any path in
+// the PATH environment variable.
+func BinaryInstalled(binary string) bool {
+	env := os.Getenv("PATH")
+	paths := strings.Split(env, ":")
+	for _, path := range paths {
+		if FileExists(path + "/" + binary) {
+			return true
+		}
+	}
+	return false
+}
+
 // LocalRepoName returns the last part of an URL behind the slash.
 // If the url is 'https://github.com/golang/go' it will return 'go'.
 func LocalRepoName(url string) string {

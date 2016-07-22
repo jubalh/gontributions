@@ -106,6 +106,26 @@ Loop_obs:
 	return sum, nil
 }
 
+func checkNeededBinaries() map[string]bool {
+	m := make(map[string]bool)
+	if util.BinaryInstalled("gita") {
+		m["git"] = true
+	}
+	if util.BinaryInstalled("osca") {
+		m["osc"] = true
+	}
+	return m
+}
+
+func printBinaryInfos(binary map[string]bool) {
+	if binary["git"] == false {
+		util.PrintInfo("git is not installed. git repositories will be skipped", util.PI_TASK)
+	}
+	if binary["osc"] == false {
+		util.PrintInfo("osc is not installed. osc repositories will be skipped", util.PI_TASK)
+	}
+}
+
 // ScanContributions takes a Configuration containing a list of emails
 // and a list of projects and returns a list of Contributions
 // which contain of a project, how often a user contributed to it and
@@ -116,23 +136,30 @@ func ScanContributions(configuration Configuration) ([]Contribution, error) {
 	os.Mkdir("repos-git", 0755)
 	os.Mkdir("repos-obs", 0755)
 
+	binary := checkNeededBinaries()
+	printBinaryInfos(binary)
+
 	for _, project := range configuration.Projects {
 		var sumCount int
 
-		sum, err := scanGit(project, configuration.Emails, contributions)
-		if err != nil {
-			return nil, err
+		if binary["git"] {
+			sum, err := scanGit(project, configuration.Emails, contributions)
+			if err != nil {
+				return nil, err
+			}
+			sumCount += sum
 		}
+
+		sum := scanWiki(project, configuration.Emails, contributions)
 		sumCount += sum
 
-		sum = scanWiki(project, configuration.Emails, contributions)
-		sumCount += sum
-
-		sum, err = scanOBS(project, configuration.Emails, contributions)
-		if err != nil {
-			return nil, err
+		if binary["osc"] {
+			sum, err := scanOBS(project, configuration.Emails, contributions)
+			if err != nil {
+				return nil, err
+			}
+			sumCount += sum
 		}
-		sumCount += sum
 
 		if sumCount > 0 {
 			c := Contribution{project, sumCount}
