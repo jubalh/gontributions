@@ -108,10 +108,10 @@ Loop_obs:
 
 func checkNeededBinaries() map[string]bool {
 	m := make(map[string]bool)
-	if util.BinaryInstalled("gita") {
+	if util.BinaryInstalled("git") {
 		m["git"] = true
 	}
-	if util.BinaryInstalled("osca") {
+	if util.BinaryInstalled("osc") {
 		m["osc"] = true
 	}
 	return m
