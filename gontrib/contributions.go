@@ -91,7 +91,7 @@ Loop_obs:
 			obsCount, err := obs.CountCommits("repos-obs"+"/"+obsEntry.Repo, email)
 			if err != nil {
 				if err == obs.ErrNoChangesFileFound {
-					util.PrintInfo("No .changes file found", util.PI_RESULT) // TODO: mild error?
+					util.PrintInfo("No .changes file found", util.PI_MILD_ERROR)
 					break Loop_obs
 				}
 				util.PrintInfo(err.Error(), util.PI_ERROR) // TODO: return?
@@ -119,10 +119,10 @@ func checkNeededBinaries() map[string]bool {
 
 func printBinaryInfos(binary map[string]bool) {
 	if binary["git"] == false {
-		util.PrintInfo("git is not installed. git repositories will be skipped", util.PI_TASK)
+		util.PrintInfo("git is not installed. git repositories will be skipped", util.PI_MILD_ERROR)
 	}
 	if binary["osc"] == false {
-		util.PrintInfo("osc is not installed. osc repositories will be skipped", util.PI_TASK)
+		util.PrintInfo("osc is not installed. osc repositories will be skipped", util.PI_MILD_ERROR)
 	}
 }
 
