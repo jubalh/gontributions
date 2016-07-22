@@ -134,7 +134,11 @@ func run(ctx *cli.Context) error {
 		templateData = string(data)
 	}
 
-	contributions := gontrib.ScanContributions(configuration)
+	contributions, err := gontrib.ScanContributions(configuration)
+	if err != nil {
+		util.PrintInfo(err.Error(), util.PI_ERROR)
+		return cli.NewExitError(err.Error(), 1)
+	}
 
 	outputPath := ctx.GlobalString("output")
 	f, err := os.Create(outputPath)

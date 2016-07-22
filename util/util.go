@@ -10,6 +10,7 @@ const (
 	PI_INFO = iota
 	PI_TASK
 	PI_RESULT
+	PI_ERROR
 )
 
 // FileExists returns true if the file or directory exists
@@ -41,6 +42,8 @@ func PrintInfo(text string, mode int) {
 		pre = "\033[36m*\033[39m "
 	case mode == PI_RESULT:
 		pre = "\033[35m==>\033[39m "
+	case mode == PI_ERROR:
+		pre = "\033[31mError:\033[39m "
 	}
 	fmt.Println(pre + text)
 }

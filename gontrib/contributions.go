@@ -1,7 +1,6 @@
 package gontrib
 
 import (
-	"fmt"
 	"os"
 	"path/filepath"
 
@@ -40,7 +39,7 @@ type Contribution struct {
 // and a list of projects and returns a list of Contributions
 // which contain of a project, how often a user contributed to it and
 // description of the project.
-func ScanContributions(configuration Configuration) []Contribution {
+func ScanContributions(configuration Configuration) ([]Contribution, error) {
 	contributions := []Contribution{}
 
 	os.Mkdir("repos-git", 0755)
@@ -55,8 +54,7 @@ func ScanContributions(configuration Configuration) []Contribution {
 				path := filepath.Join("repos-git", util.LocalRepoName(repo))
 				gitCount, err := git.CountCommits(path, email)
 				if err != nil {
-					fmt.Fprintln(os.Stderr, err)
-					os.Exit(1)
+					return nil, err
 				}
 
 				if gitCount != 0 {
@@ -72,7 +70,7 @@ func ScanContributions(configuration Configuration) []Contribution {
 
 			wikiCount, err := mediawiki.GetUserEdits(wiki.BaseUrl, wiki.User)
 			if err != nil {
-				fmt.Fprintln(os.Stderr, err)
+				util.PrintInfo(err.Error(), util.PI_ERROR)
 			}
 
 			if wikiCount != 0 {
@@ -87,17 +85,16 @@ func ScanContributions(configuration Configuration) []Contribution {
 
 			err := obs.GetLatestRepo(obsEntry)
 			if err != nil {
-				fmt.Fprintln(os.Stderr, err)
-				os.Exit(1)
+				return nil, err
 			}
 			for _, email := range configuration.Emails {
 				obsCount, err := obs.CountCommits("repos-obs"+"/"+obsEntry.Repo, email)
 				if err != nil {
 					if err == obs.ErrNoChangesFileFound {
-						util.PrintInfo("No .changes file found", util.PI_RESULT)
+						util.PrintInfo("No .changes file found", util.PI_RESULT) // TODO: mild error?
 						break Loop_obs
 					}
-					fmt.Fprintln(os.Stderr, err)
+					util.PrintInfo(err.Error(), util.PI_ERROR) // TODO: return?
 				}
 
 				if obsCount != 0 {
@@ -112,5 +109,5 @@ func ScanContributions(configuration Configuration) []Contribution {
 			contributions = append(contributions, c)
 		}
 	}
-	return contributions
+	return contributions, nil
 }
