@@ -35,6 +35,77 @@ type Contribution struct {
 	Count   int
 }
 
+// scanGit is a helper function for ScanContributions which takes care of the git part
+func scanGit(project Project, emails []string, contributions []Contribution) (int, error) {
+	var sum int
+	for _, repo := range project.Gitrepos {
+		util.PrintInfo("Working on "+repo, util.PI_TASK)
+		git.GetLatestRepo(repo)
+		for _, email := range emails {
+			path := filepath.Join("repos-git", util.LocalRepoName(repo))
+			gitCount, err := git.CountCommits(path, email)
+			if err != nil {
+				return 0, err
+			}
+
+			if gitCount != 0 {
+				util.PrintInfoF("%s: %d commits", util.PI_RESULT, email, gitCount)
+				sum += gitCount
+			}
+		}
+	}
+	return sum, nil
+}
+
+// scanWiki is a helper function for ScanContributions which takes care of the MediaWiki part
+func scanWiki(project Project, emails []string, contributions []Contribution) int {
+	var sum int
+	for _, wiki := range project.MediaWikis {
+		util.PrintInfoF("Working on MediaWiki %s as %s", util.PI_TASK, wiki.BaseUrl, wiki.User)
+
+		wikiCount, err := mediawiki.GetUserEdits(wiki.BaseUrl, wiki.User)
+		if err != nil {
+			util.PrintInfo(err.Error(), util.PI_ERROR)
+		}
+
+		if wikiCount != 0 {
+			util.PrintInfoF("%d edits", util.PI_RESULT, wikiCount)
+			sum += wikiCount
+		}
+	}
+	return sum
+}
+
+// scanOBS is a helper function for ScanContributions which takes care of the OBS part
+func scanOBS(project Project, emails []string, contributions []Contribution) (int, error) {
+	var sum int
+Loop_obs:
+	for _, obsEntry := range project.Obs {
+		util.PrintInfo("Working on "+obsEntry.Repo, util.PI_TASK)
+
+		err := obs.GetLatestRepo(obsEntry)
+		if err != nil {
+			return 0, err
+		}
+		for _, email := range emails {
+			obsCount, err := obs.CountCommits("repos-obs"+"/"+obsEntry.Repo, email)
+			if err != nil {
+				if err == obs.ErrNoChangesFileFound {
+					util.PrintInfo("No .changes file found", util.PI_RESULT) // TODO: mild error?
+					break Loop_obs
+				}
+				util.PrintInfo(err.Error(), util.PI_ERROR) // TODO: return?
+			}
+
+			if obsCount != 0 {
+				util.PrintInfoF("%s: %d changes", util.PI_RESULT, email, obsCount)
+				sum += obsCount
+			}
+		}
+	}
+	return sum, nil
+}
+
 // ScanContributions takes a Configuration containing a list of emails
 // and a list of projects and returns a list of Contributions
 // which contain of a project, how often a user contributed to it and
@@ -47,67 +118,27 @@ func ScanContributions(configuration Configuration) ([]Contribution, error) {
 
 	for _, project := range configuration.Projects {
 		var sumCount int
-		for _, repo := range project.Gitrepos {
-			util.PrintInfo("Working on "+repo, util.PI_TASK)
-			git.GetLatestRepo(repo)
-			for _, email := range configuration.Emails {
-				path := filepath.Join("repos-git", util.LocalRepoName(repo))
-				gitCount, err := git.CountCommits(path, email)
-				if err != nil {
-					return nil, err
-				}
 
-				if gitCount != 0 {
-					util.PrintInfoF("%s: %d commits", util.PI_RESULT, email, gitCount)
-					sumCount += gitCount
-				}
-
-			}
+		sum, err := scanGit(project, configuration.Emails, contributions)
+		if err != nil {
+			return nil, err
 		}
+		sumCount += sum
 
-		for _, wiki := range project.MediaWikis {
-			util.PrintInfoF("Working on MediaWiki %s as %s", util.PI_TASK, wiki.BaseUrl, wiki.User)
+		sum = scanWiki(project, configuration.Emails, contributions)
+		sumCount += sum
 
-			wikiCount, err := mediawiki.GetUserEdits(wiki.BaseUrl, wiki.User)
-			if err != nil {
-				util.PrintInfo(err.Error(), util.PI_ERROR)
-			}
-
-			if wikiCount != 0 {
-				util.PrintInfoF("%d edits", util.PI_RESULT, wikiCount)
-				sumCount += wikiCount
-			}
+		sum, err = scanOBS(project, configuration.Emails, contributions)
+		if err != nil {
+			return nil, err
 		}
-
-	Loop_obs:
-		for _, obsEntry := range project.Obs {
-			util.PrintInfo("Working on "+obsEntry.Repo, util.PI_TASK)
-
-			err := obs.GetLatestRepo(obsEntry)
-			if err != nil {
-				return nil, err
-			}
-			for _, email := range configuration.Emails {
-				obsCount, err := obs.CountCommits("repos-obs"+"/"+obsEntry.Repo, email)
-				if err != nil {
-					if err == obs.ErrNoChangesFileFound {
-						util.PrintInfo("No .changes file found", util.PI_RESULT) // TODO: mild error?
-						break Loop_obs
-					}
-					util.PrintInfo(err.Error(), util.PI_ERROR) // TODO: return?
-				}
-
-				if obsCount != 0 {
-					util.PrintInfoF("%s: %d changes", util.PI_RESULT, email, obsCount)
-					sumCount += obsCount
-				}
-			}
-		}
+		sumCount += sum
 
 		if sumCount > 0 {
 			c := Contribution{project, sumCount}
 			contributions = append(contributions, c)
 		}
 	}
+
 	return contributions, nil
 }
