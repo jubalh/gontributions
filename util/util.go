@@ -38,9 +38,9 @@ func PrintInfo(text string, mode int) {
 	case mode == PI_INFO:
 		pre = ""
 	case mode == PI_TASK:
-		pre = "* "
+		pre = "\033[36m*\033[39m "
 	case mode == PI_RESULT:
-		pre = "==> "
+		pre = "\033[35m==>\033[39m "
 	}
 	fmt.Println(pre + text)
 }
