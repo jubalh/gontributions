@@ -30,6 +30,9 @@ type Query struct {
 // the user username has done.
 func GetUserEdits(wikiUrl string, username string) (count int, err error) {
 	wikiURL, err := url.Parse(wikiUrl)
+	if err != nil {
+		return 0, errors.New("Not a valid URL")
+	}
 	wikiURL.Path += "/api.php"
 	parameters := url.Values{}
 	parameters.Add("action", "query")
@@ -41,7 +44,7 @@ func GetUserEdits(wikiUrl string, username string) (count int, err error) {
 
 	resp, err := http.Get(wikiURL.String())
 	if err != nil {
-		return
+		return 0, errors.New("Not able to HTTP GET")
 	}
 	defer resp.Body.Close()
 
@@ -52,6 +55,9 @@ func GetUserEdits(wikiUrl string, username string) (count int, err error) {
 
 	decoder := json.NewDecoder(resp.Body)
 	err = decoder.Decode(&response)
+	if err != nil {
+		return 0, errors.New("Not able to decode JSON")
+	}
 
 	if len(response.Query.Users) > 0 {
 		count = response.Query.Users[0].Edits

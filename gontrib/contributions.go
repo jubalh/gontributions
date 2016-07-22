@@ -65,7 +65,16 @@ func scanWiki(project Project, emails []string, contributions []Contribution) in
 
 		wikiCount, err := mediawiki.GetUserEdits(wiki.BaseUrl, wiki.User)
 		if err != nil {
-			util.PrintInfo(err.Error(), util.PI_ERROR)
+			switch err.Error() {
+			case "Not a valid URL":
+				util.PrintInfo(err.Error(), util.PI_MILD_ERROR)
+				break
+			case "Not able to HTTP Get",
+				"Not able to decode JSON",
+				"Did not get a 'user' returned":
+				util.PrintInfo(err.Error(), util.PI_ERROR)
+				break
+			}
 		}
 
 		if wikiCount != 0 {
