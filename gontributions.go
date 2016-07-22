@@ -11,7 +11,8 @@ import (
 	"os"
 	"path/filepath"
 
-	"github.com/codegangsta/cli"
+	"gopkg.in/urfave/cli.v1"
+
 	"github.com/jubalh/gontributions/gontrib"
 	"github.com/jubalh/gontributions/util"
 	"github.com/jubalh/gontributions/vcs/mediawiki"
@@ -89,21 +90,23 @@ func main() {
 
 	app.Action = run
 
-	app.Run(os.Args)
+	err := app.Run(os.Args)
+	if err != nil {
+		fmt.Println(err.Error())
+	}
 }
 
 // Run will handle the functionallity.
-func run(cli *cli.Context) {
+func run(ctx *cli.Context) error {
 	// Load specified json configuration file
-	configPath := cli.GlobalString("config")
+	configPath := ctx.GlobalString("config")
 	configuration, err := loadConfig(configPath)
 	if err != nil {
-		fmt.Fprintln(os.Stderr, err)
-		os.Exit(1)
+		return cli.NewExitError(err.Error(), 1)
 	}
 
 	// Get users template selection
-	templateName := cli.GlobalString("template")
+	templateName := ctx.GlobalString("template")
 
 	var templateData string
 
@@ -113,41 +116,41 @@ func run(cli *cli.Context) {
 		// Use asset
 		data, err := Asset(filepath.Join(templateFolderName, templateName))
 		if err != nil {
-			fmt.Fprintln(os.Stderr, err)
-			os.Exit(1)
+			return cli.NewExitError(err.Error(), 1)
 		}
 		templateData = string(data)
 	} else {
 		// Use template from user defined folder
 		absoluteTemplatePath := filepath.Join(templatesPath, templateName)
 		if !util.FileExists(absoluteTemplatePath) {
-			fmt.Fprintf(os.Stderr, "Template file %s does not exist\n", absoluteTemplatePath)
-			os.Exit(1)
+			var s string
+			fmt.Sprintf(s, "Template file %s does not exist\n", absoluteTemplatePath)
+			return cli.NewExitError(s, 1)
 		}
 		data, err := ioutil.ReadFile(absoluteTemplatePath)
 		if err != nil {
-			fmt.Fprintln(os.Stderr, err)
-			os.Exit(1)
+			return cli.NewExitError(err.Error(), 1)
 		}
 		templateData = string(data)
 	}
 
 	contributions := gontrib.ScanContributions(configuration)
 
-	outputPath := cli.GlobalString("output")
+	outputPath := ctx.GlobalString("output")
 	f, err := os.Create(outputPath)
 	if err != nil {
-		fmt.Fprintln(os.Stderr, err)
+		return cli.NewExitError(err.Error(), 1)
 	}
 	defer f.Close()
 
 	writer := bufio.NewWriter(f)
 	fillTemplate(contributions, templateData, writer)
 	if err := writer.Flush(); err != nil {
-		fmt.Fprintln(os.Stderr, err)
+		return cli.NewExitError(err.Error(), 1)
 	}
 
 	util.PrintInfoF("\nReport saved in: %s", util.PI_INFO, outputPath)
+	return nil
 }
 
 // Create an example configuration file which the user can
