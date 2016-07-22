@@ -16,11 +16,8 @@ const (
 // FileExists returns true if the file or directory exists
 // otherwise it will return false.
 func FileExists(path string) bool {
-	_, err := os.Stat(path)
-	if err != nil {
-		if os.IsNotExist(err) {
-			return false
-		}
+	if _, err := os.Stat(path); os.IsNotExist(err) {
+		return false
 	}
 	return true
 }
