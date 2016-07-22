@@ -4,7 +4,7 @@
 	</head>
 	<body>
 		<h1>List of open source contributions</h1>
-		{{ range . }}
+		{{ range .Contributions }}
 		{{ if .Project.URL }}
 		<b><a href="{{ .Project.URL }}">{{ .Project.Name }}</a></b>
 		{{ else }}
@@ -19,5 +19,6 @@
 				<br/>
 				<br/>
 		{{ end }}
+		<i>Created on {{ putdate }} with <a href="https://github.com/jubalh/gontributions">gontributions</a></i>
 	</body>
 </html>

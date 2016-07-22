@@ -10,6 +10,7 @@ import (
 	"io/ioutil"
 	"os"
 	"path/filepath"
+	"time"
 
 	"gopkg.in/urfave/cli.v1"
 
@@ -18,6 +19,11 @@ import (
 	"github.com/jubalh/gontributions/vcs/mediawiki"
 	"github.com/jubalh/gontributions/vcs/obs"
 )
+
+// TemplateFill is there so it can easily be extended without breaking old templates/layouts
+type TemplateFill struct {
+	Contributions []gontrib.Contribution
+}
 
 const (
 	templateFolderName = "templates"
@@ -37,16 +43,26 @@ func loadConfig(filename string) (gontribs gontrib.Configuration, err error) {
 	return
 }
 
+func putdate() string {
+	return time.Now().Local().Format("2006-01-02")
+}
+
 // fillTemplate puts the information of a Contribution
 // into a template.
 func fillTemplate(contributions []gontrib.Contribution, tempContent string, writer io.Writer) {
-	t, err := template.New("string-template").Parse(tempContent)
+	tf := TemplateFill{Contributions: contributions}
+
+	funcMap := template.FuncMap{
+		"putdate": putdate,
+	}
+
+	t, err := template.New("string-template").Funcs(funcMap).Parse(tempContent)
 	if err != nil {
 		fmt.Fprintln(os.Stderr, err)
 		os.Exit(1)
 	}
 
-	err = t.Execute(writer, contributions)
+	err = t.Execute(writer, tf)
 	if err != nil {
 		fmt.Fprintln(os.Stderr, err)
 		os.Exit(1)

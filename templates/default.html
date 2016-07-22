@@ -5,9 +5,10 @@
 	<body>
 		<h1>List of open source contributions</h1>
 		<ul>
-		{{ range . }}
+		{{ range .Contributions }}
 		<li>{{ .Project.Name }}: {{ .Count }} contributions</li>
 		{{ end }}
 		</ul>
+		<i>Created on {{ putdate }} with <a href="https://github.com/jubalh/gontributions">gontributions</a></i>
 	</body>
 </html>
