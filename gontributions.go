@@ -187,7 +187,7 @@ func run(ctx *cli.Context) error {
 
 // Create an example configuration file which the user can
 // adapt to his own needs.
-func cmdExconf(c *cli.Context) {
+func cmdExconf(c *cli.Context) error {
 	configuration := gontrib.Configuration{
 		Emails: []string{"jubalh@openmailbox.org", "g.bluehut@gmail.com"},
 		Projects: []gontrib.Project{
@@ -200,8 +200,9 @@ func cmdExconf(c *cli.Context) {
 
 	text, err := json.MarshalIndent(configuration, "", "    ")
 	if err != nil {
-		fmt.Fprintln(os.Stderr, err)
+		return cli.NewExitError(err.Error(), 1)
 	}
 
 	fmt.Println(string(text))
+	return nil
 }
