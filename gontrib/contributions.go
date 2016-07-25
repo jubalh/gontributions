@@ -10,6 +10,9 @@ import (
 	"github.com/jubalh/gontributions/vcs/obs"
 )
 
+// From contributions.go
+var PullSources bool
+
 // Project hold all important information
 // about a project.
 type Project struct {
@@ -40,7 +43,9 @@ func scanGit(project Project, emails []string, contributions []Contribution) (in
 	var sum int
 	for _, repo := range project.Gitrepos {
 		util.PrintInfo("Working on "+repo, util.PI_TASK)
-		git.GetLatestRepo(repo)
+		if PullSources {
+			git.GetLatestRepo(repo)
+		}
 		for _, email := range emails {
 			path := filepath.Join("repos-git", util.LocalRepoName(repo))
 			gitCount, err := git.CountCommits(path, email)
@@ -92,9 +97,11 @@ Loop_obs:
 	for _, obsEntry := range project.Obs {
 		util.PrintInfo("Working on "+obsEntry.Repo, util.PI_TASK)
 
-		err := obs.GetLatestRepo(obsEntry)
-		if err != nil {
-			return 0, err
+		if PullSources {
+			err := obs.GetLatestRepo(obsEntry)
+			if err != nil {
+				return 0, err
+			}
 		}
 		for _, email := range emails {
 			obsCount, err := obs.CountCommits("repos-obs"+"/"+obsEntry.Repo, email)

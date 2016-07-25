@@ -95,6 +95,10 @@ func main() {
 			Value: "output.html",
 			Usage: "Define name of the generated HTMl file",
 		},
+		cli.BoolFlag{
+			Name:  "no-pull",
+			Usage: "Don't update VCS repositories",
+		},
 	}
 	app.Commands = []cli.Command{
 		{
@@ -149,6 +153,8 @@ func run(ctx *cli.Context) error {
 		}
 		templateData = string(data)
 	}
+
+	gontrib.PullSources = !ctx.GlobalBool("no-pull")
 
 	contributions, err := gontrib.ScanContributions(configuration)
 	if err != nil {
