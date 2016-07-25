@@ -122,6 +122,12 @@ func run(ctx *cli.Context) error {
 	configPath := ctx.GlobalString("config")
 	configuration, err := loadConfig(configPath)
 	if err != nil {
+		// if config cant be loaded because default one is used
+		// (set in StringFlag) and is not available, then show the usage.
+		if !ctx.IsSet("config") {
+			cli.ShowAppHelp(ctx)
+			return nil
+		}
 		return cli.NewExitError(err.Error(), 1)
 	}
 
