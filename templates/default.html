@@ -6,7 +6,11 @@
 		<h1>List of open source contributions</h1>
 		<ul>
 		{{ range .Contributions }}
-		<li>{{ .Project.Name }}: {{ .Count }} contributions</li>
+			{{ if gt .Count 1 }}
+				<li>{{ .Project.Name }}: {{ .Count }} contributions</li>
+			{{ else }}
+				<li>{{ .Project.Name }}: {{ .Count }} contributions</li>
+			{{ end }}
 		{{ end }}
 		</ul>
 		<i>Created on {{ putdate }} with <a href="https://github.com/jubalh/gontributions">gontributions</a></i>

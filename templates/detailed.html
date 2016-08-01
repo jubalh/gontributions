@@ -15,7 +15,11 @@
 				{{ .Project.Description }}
 				<br/>
 				{{ end }}
-				{{ .Count }} contributions
+				{{ if gt .Count 1 }}
+					{{ .Count }} contributions
+				{{ else }}
+					{{ .Count }} contribution
+				{{ end }}
 				<br/>
 				<br/>
 		{{ end }}
