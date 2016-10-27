@@ -1,6 +1,7 @@
 package gontrib
 
 import (
+	"errors"
 	"os"
 	"path/filepath"
 
@@ -31,7 +32,7 @@ type Configuration struct {
 	Projects []Project
 }
 
-// Contribution hols the Projects the user
+// Contribution holds the Projects the user
 // contributed to and a the ammounts of contributions
 type Contribution struct {
 	Project Project
@@ -44,7 +45,11 @@ func scanGit(project Project, emails []string, contributions []Contribution) (in
 	for _, repo := range project.Gitrepos {
 		util.PrintInfo("Working on "+repo, util.PI_TASK)
 		if PullSources {
-			git.GetLatestRepo(repo)
+			err := git.GetLatestRepo(repo)
+			if err != nil {
+				util.PrintInfo("Problem loading repo", util.PI_MILD_ERROR)
+				return 0, errors.New("Could not clone repo")
+			}
 		}
 		for _, email := range emails {
 			path := filepath.Join("repos-git", util.LocalRepoName(repo))
