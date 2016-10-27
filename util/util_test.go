@@ -28,4 +28,9 @@ func TestLocalRepoName(t *testing.T) {
 	if actual != expected {
 		t.Error("Failed")
 	}
+	expected = "repo.git"
+	actual = LocalRepoName("git@somewhere.com:repo.git")
+	if actual != expected {
+		t.Error("Failed")
+	}
 }

@@ -38,8 +38,11 @@ func BinaryInstalled(binary string) bool {
 
 // LocalRepoName returns the last part of an URL behind the slash.
 // If the url is 'https://github.com/golang/go' it will return 'go'.
+// If the url is 'git@golang.com:go' it will also return 'go'.
 func LocalRepoName(url string) string {
 	parts := strings.Split(url, "/")
+	possibleName := parts[len(parts)-1]
+	parts = strings.Split(possibleName, ":")
 	return parts[len(parts)-1]
 }
 

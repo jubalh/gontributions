@@ -39,7 +39,7 @@ func GetLatestRepo(url string) (err error) {
 // cloneRepo takes a RepoData struct and clones the repository
 // specified in rd.
 func cloneRepo(rd RepoData) error {
-	//fmt.Printf("Running 'git clone %s %s' in %s\n", rd.url, rd.localName, rd.workingDirectory)
+	fmt.Printf("Running 'git clone %s %s' in %s\n", rd.url, rd.localName, rd.workingDirectory)
 
 	cmd := exec.Command("git", "clone", rd.url, rd.localName)
 	cmd.Dir = rd.workingDirectory
