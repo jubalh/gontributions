@@ -6,6 +6,12 @@ import (
 	"testing"
 )
 
+func TestBinaryInstalled(t *testing.T) {
+	if BinaryInstalled("git") == false {
+		t.Errorf("Failed: git should be installed on this computer")
+	}
+}
+
 func TestFileExists(t *testing.T) {
 	if FileExists("testfile") {
 		t.Error("Failed: File should not exist")
@@ -25,6 +31,11 @@ func TestFileExists(t *testing.T) {
 func TestLocalRepoName(t *testing.T) {
 	expected := "nudoku"
 	actual := LocalRepoName("https://github.com/jubalh/nudoku")
+	if actual != expected {
+		t.Error("Failed")
+	}
+	expected = "repo.git"
+	actual = LocalRepoName("git@somewhere.com:repo.git")
 	if actual != expected {
 		t.Error("Failed")
 	}

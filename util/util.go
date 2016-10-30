@@ -3,6 +3,8 @@ package util
 import (
 	"fmt"
 	"os"
+	"path"
+	"runtime"
 	"strings"
 )
 
@@ -28,8 +30,15 @@ func FileExists(path string) bool {
 func BinaryInstalled(binary string) bool {
 	env := os.Getenv("PATH")
 	paths := strings.Split(env, ":")
-	for _, path := range paths {
-		if FileExists(path + "/" + binary) {
+	if runtime.GOOS == "windows" {
+		paths = strings.Split(env, ";")
+	}
+	for _, fpath := range paths {
+		pathToBinary := path.Join(fpath, binary)
+		if runtime.GOOS == "windows" {
+			pathToBinary = path.Join(fpath, binary+".exe")
+		}
+		if FileExists(pathToBinary) {
 			return true
 		}
 	}
@@ -38,8 +47,11 @@ func BinaryInstalled(binary string) bool {
 
 // LocalRepoName returns the last part of an URL behind the slash.
 // If the url is 'https://github.com/golang/go' it will return 'go'.
+// If the url is 'git@golang.com:go' it will also return 'go'.
 func LocalRepoName(url string) string {
 	parts := strings.Split(url, "/")
+	possibleName := parts[len(parts)-1]
+	parts = strings.Split(possibleName, ":")
 	return parts[len(parts)-1]
 }
 
