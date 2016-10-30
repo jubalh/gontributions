@@ -35,6 +35,9 @@ Per default it expects a `templates/` directory to exist in which it will look f
 
 The **GONTRIB_TEMPLATES_PTH** environment variable can be used to change the path in which it will look for this.
 
+## Usage
+Please read the USAGE.md file for more hints on how to use gontributions.
+
 ## Features
 Search for commits in:
 - [x] Git
