@@ -42,7 +42,7 @@ Please read the USAGE.md file for more hints on how to use gontributions.
 Search for commits in:
 - [x] Git
 - [ ] Subversion
-- [ ] Mercurial
+- [x] Mercurial
 - [ ] Bazaar
 - [x] Open Build Service
 

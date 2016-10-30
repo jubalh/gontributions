@@ -6,6 +6,7 @@ import (
 
 	"github.com/jubalh/gontributions/util"
 	"github.com/jubalh/gontributions/vcs/git"
+	"github.com/jubalh/gontributions/vcs/hg"
 	"github.com/jubalh/gontributions/vcs/mediawiki"
 	"github.com/jubalh/gontributions/vcs/obs"
 )
@@ -20,6 +21,7 @@ type Project struct {
 	Description string
 	URL         string
 	Gitrepos    []string
+	Hgrepos     []string
 	MediaWikis  []mediawiki.MediaWiki
 	Obs         []obs.OpenBuildService
 }
@@ -60,6 +62,34 @@ func scanGit(project Project, emails []string, contributions []Contribution) (in
 			if gitCount != 0 {
 				util.PrintInfoF("%s: %d commits", util.PI_RESULT, email, gitCount)
 				sum += gitCount
+			}
+		}
+	}
+	return sum, nil
+}
+
+// scanHg is a helper function for ScanContributions which takes care of the git part
+func scanHg(project Project, emails []string, contributions []Contribution) (int, error) {
+	var sum int
+	for _, repo := range project.Hgrepos {
+		util.PrintInfo("Working on "+repo, util.PI_TASK)
+		if PullSources {
+			err := hg.GetLatestRepo(repo)
+			if err != nil {
+				util.PrintInfo("Problem loading repo", util.PI_MILD_ERROR)
+				return 0, err
+			}
+		}
+		for _, email := range emails {
+			path := filepath.Join("repos-hg", util.LocalRepoName(repo))
+			hgCount, err := hg.CountCommits(path, email)
+			if err != nil {
+				return 0, err
+			}
+
+			if hgCount != 0 {
+				util.PrintInfoF("%s: %d commits", util.PI_RESULT, email, hgCount)
+				sum += hgCount
 			}
 		}
 	}
@@ -131,6 +161,9 @@ func checkNeededBinaries() map[string]bool {
 	if util.BinaryInstalled("git") {
 		m["git"] = true
 	}
+	if util.BinaryInstalled("hg") {
+		m["hg"] = true
+	}
 	if util.BinaryInstalled("osc") {
 		m["osc"] = true
 	}
@@ -140,6 +173,9 @@ func checkNeededBinaries() map[string]bool {
 func printBinaryInfos(binary map[string]bool) {
 	if binary["git"] == false {
 		util.PrintInfo("git is not installed. git repositories will be skipped", util.PI_MILD_ERROR)
+	}
+	if binary["hg"] == false {
+		util.PrintInfo("hg is not installed. Mercurial repositories will be skipped", util.PI_MILD_ERROR)
 	}
 	if binary["osc"] == false {
 		util.PrintInfo("osc is not installed. osc repositories will be skipped", util.PI_MILD_ERROR)
@@ -154,6 +190,7 @@ func ScanContributions(configuration Configuration) ([]Contribution, error) {
 	contributions := []Contribution{}
 
 	os.Mkdir("repos-git", 0755)
+	os.Mkdir("repos-hg", 0755)
 	os.Mkdir("repos-obs", 0755)
 
 	binary := checkNeededBinaries()
@@ -164,6 +201,14 @@ func ScanContributions(configuration Configuration) ([]Contribution, error) {
 
 		if binary["git"] {
 			sum, err := scanGit(project, configuration.Emails, contributions)
+			if err != nil {
+				return nil, err
+			}
+			sumCount += sum
+		}
+
+		if binary["hg"] {
+			sum, err := scanHg(project, configuration.Emails, contributions)
 			if err != nil {
 				return nil, err
 			}
