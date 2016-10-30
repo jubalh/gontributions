@@ -160,12 +160,15 @@ func checkNeededBinaries() map[string]bool {
 	m := make(map[string]bool)
 	if util.BinaryInstalled("git") {
 		m["git"] = true
+		os.Mkdir("repos-git", 0755)
 	}
 	if util.BinaryInstalled("hg") {
 		m["hg"] = true
+		os.Mkdir("repos-hg", 0755)
 	}
 	if util.BinaryInstalled("osc") {
 		m["osc"] = true
+		os.Mkdir("repos-obs", 0755)
 	}
 	return m
 }
@@ -188,10 +191,6 @@ func printBinaryInfos(binary map[string]bool) {
 // description of the project.
 func ScanContributions(configuration Configuration) ([]Contribution, error) {
 	contributions := []Contribution{}
-
-	os.Mkdir("repos-git", 0755)
-	os.Mkdir("repos-hg", 0755)
-	os.Mkdir("repos-obs", 0755)
 
 	binary := checkNeededBinaries()
 	printBinaryInfos(binary)
