@@ -1,7 +1,6 @@
 package gontrib
 
 import (
-	"errors"
 	"os"
 	"path/filepath"
 
@@ -48,7 +47,7 @@ func scanGit(project Project, emails []string, contributions []Contribution) (in
 			err := git.GetLatestRepo(repo)
 			if err != nil {
 				util.PrintInfo("Problem loading repo", util.PI_MILD_ERROR)
-				return 0, errors.New("Could not clone repo")
+				return 0, err
 			}
 		}
 		for _, email := range emails {

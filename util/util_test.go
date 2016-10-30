@@ -6,6 +6,12 @@ import (
 	"testing"
 )
 
+func TestBinaryInstalled(t *testing.T) {
+	if BinaryInstalled("git") == false {
+		t.Errorf("Failed: git should be installed on this computer")
+	}
+}
+
 func TestFileExists(t *testing.T) {
 	if FileExists("testfile") {
 		t.Error("Failed: File should not exist")

@@ -3,6 +3,8 @@ package util
 import (
 	"fmt"
 	"os"
+	"path"
+	"runtime"
 	"strings"
 )
 
@@ -28,8 +30,15 @@ func FileExists(path string) bool {
 func BinaryInstalled(binary string) bool {
 	env := os.Getenv("PATH")
 	paths := strings.Split(env, ":")
-	for _, path := range paths {
-		if FileExists(path + "/" + binary) {
+	if runtime.GOOS == "windows" {
+		paths = strings.Split(env, ";")
+	}
+	for _, fpath := range paths {
+		pathToBinary := path.Join(fpath, binary)
+		if runtime.GOOS == "windows" {
+			pathToBinary = path.Join(fpath, binary+".exe")
+		}
+		if FileExists(pathToBinary) {
 			return true
 		}
 	}
