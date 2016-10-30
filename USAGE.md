@@ -2,7 +2,7 @@
 
 ## MediaWiki
 
-*Example configuration*
+**Example configuration**
 
 ```
 {
