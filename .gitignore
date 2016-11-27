@@ -1,6 +1,7 @@
 *.json
 repos-git/
 repos-obs/
+repos-hg/
 output.html
 cover.out
 gontributions
