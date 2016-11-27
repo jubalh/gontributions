@@ -164,7 +164,7 @@ func run(ctx *cli.Context) error {
 
 	contributions, err := gontrib.ScanContributions(configuration)
 	if err != nil {
-		util.PrintInfo(err.Error(), util.PI_ERROR)
+		util.PrintInfo(nil, err.Error(), util.PI_ERROR)
 		return cli.NewExitError(err.Error(), 1)
 	}
 
@@ -181,7 +181,25 @@ func run(ctx *cli.Context) error {
 		return cli.NewExitError(err.Error(), 1)
 	}
 
-	util.PrintInfoF("\nReport saved in: %s", util.PI_INFO, outputPath)
+	util.PrintInfoF(nil, "\nReport saved in: %s", util.PI_INFO, outputPath)
+
+	errorfile, err := os.Open("errors.log")
+	if err != nil {
+		fmt.Println(err.Error())
+		return nil
+	}
+	defer errorfile.Close()
+	fi, err := errorfile.Stat()
+	if err != nil {
+		fmt.Println(err.Error())
+		return nil
+	}
+	if fi.Size() > 0 {
+		util.PrintInfoF(nil, "Some contributions could not be checked. See: errors.log", util.PI_ERROR)
+	} else {
+		os.Remove("errors.log")
+	}
+
 	return nil
 }
 

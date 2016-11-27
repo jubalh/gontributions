@@ -1,6 +1,7 @@
 package gontrib
 
 import (
+	"bufio"
 	"os"
 	"path/filepath"
 
@@ -13,6 +14,7 @@ import (
 
 // From contributions.go
 var PullSources bool
+var logwriter *bufio.Writer
 
 // Project hold all important information
 // about a project.
@@ -44,11 +46,11 @@ type Contribution struct {
 func scanGit(project Project, emails []string, contributions []Contribution) (int, error) {
 	var sum int
 	for _, repo := range project.Gitrepos {
-		util.PrintInfo("Working on "+repo, util.PI_TASK)
+		util.PrintInfo(nil, "Working on "+repo, util.PI_TASK)
 		if PullSources {
 			err := git.GetLatestRepo(repo)
 			if err != nil {
-				util.PrintInfo("Problem loading repo", util.PI_MILD_ERROR)
+				util.PrintInfoF(logwriter, "Problem loading repo %s: %s", util.PI_MILD_ERROR, repo, err.Error())
 				return 0, err
 			}
 		}
@@ -60,7 +62,7 @@ func scanGit(project Project, emails []string, contributions []Contribution) (in
 			}
 
 			if gitCount != 0 {
-				util.PrintInfoF("%s: %d commits", util.PI_RESULT, email, gitCount)
+				util.PrintInfoF(nil, "%s: %d commits", util.PI_RESULT, email, gitCount)
 				sum += gitCount
 			}
 		}
@@ -72,11 +74,11 @@ func scanGit(project Project, emails []string, contributions []Contribution) (in
 func scanHg(project Project, emails []string, contributions []Contribution) (int, error) {
 	var sum int
 	for _, repo := range project.Hgrepos {
-		util.PrintInfo("Working on "+repo, util.PI_TASK)
+		util.PrintInfo(nil, "Working on "+repo, util.PI_TASK)
 		if PullSources {
 			err := hg.GetLatestRepo(repo)
 			if err != nil {
-				util.PrintInfo("Problem loading repo", util.PI_MILD_ERROR)
+				util.PrintInfo(logwriter, "Problem loading repo "+repo+": "+err.Error(), util.PI_MILD_ERROR)
 				return 0, err
 			}
 		}
@@ -88,7 +90,7 @@ func scanHg(project Project, emails []string, contributions []Contribution) (int
 			}
 
 			if hgCount != 0 {
-				util.PrintInfoF("%s: %d commits", util.PI_RESULT, email, hgCount)
+				util.PrintInfoF(nil, "%s: %d commits", util.PI_RESULT, email, hgCount)
 				sum += hgCount
 			}
 		}
@@ -100,24 +102,26 @@ func scanHg(project Project, emails []string, contributions []Contribution) (int
 func scanWiki(project Project, emails []string, contributions []Contribution) int {
 	var sum int
 	for _, wiki := range project.MediaWikis {
-		util.PrintInfoF("Working on MediaWiki %s as %s", util.PI_TASK, wiki.BaseUrl, wiki.User)
+		util.PrintInfoF(nil, "Working on MediaWiki %s as %s", util.PI_TASK, wiki.BaseUrl, wiki.User)
 
 		wikiCount, err := mediawiki.GetUserEdits(wiki.BaseUrl, wiki.User)
 		if err != nil {
 			switch err.Error() {
 			case "Not a valid URL":
-				util.PrintInfo(err.Error(), util.PI_MILD_ERROR)
+				util.PrintInfo(logwriter, err.Error(), util.PI_MILD_ERROR)
 				break
 			case "Not able to HTTP Get",
 				"Not able to decode JSON",
 				"Did not get a 'user' returned":
-				util.PrintInfo(err.Error(), util.PI_ERROR)
+				util.PrintInfo(logwriter, err.Error(), util.PI_ERROR)
 				break
 			}
 		}
 
-		if wikiCount != 0 {
-			util.PrintInfoF("%d edits", util.PI_RESULT, wikiCount)
+		if wikiCount == 0 {
+			util.PrintInfoF(logwriter, "No edits for user %s", util.PI_MILD_ERROR, wiki.User)
+		} else {
+			util.PrintInfoF(nil, "%d edits", util.PI_RESULT, wikiCount)
 			sum += wikiCount
 		}
 	}
@@ -129,11 +133,12 @@ func scanOBS(project Project, emails []string, contributions []Contribution) (in
 	var sum int
 Loop_obs:
 	for _, obsEntry := range project.Obs {
-		util.PrintInfo("Working on "+obsEntry.Repo, util.PI_TASK)
+		util.PrintInfo(nil, "Working on "+obsEntry.Repo, util.PI_TASK)
 
 		if PullSources {
 			err := obs.GetLatestRepo(obsEntry)
 			if err != nil {
+				util.PrintInfoF(logwriter, "Problem loading repo %s: %s", util.PI_MILD_ERROR, obsEntry.Repo, err.Error())
 				return 0, err
 			}
 		}
@@ -141,14 +146,14 @@ Loop_obs:
 			obsCount, err := obs.CountCommits("repos-obs"+"/"+obsEntry.Repo, email)
 			if err != nil {
 				if err == obs.ErrNoChangesFileFound {
-					util.PrintInfo("No .changes file found", util.PI_MILD_ERROR)
+					util.PrintInfo(logwriter, "No .changes file found", util.PI_MILD_ERROR)
 					break Loop_obs
 				}
-				util.PrintInfo(err.Error(), util.PI_ERROR) // TODO: return?
+				util.PrintInfo(logwriter, err.Error(), util.PI_ERROR) // TODO: return?
 			}
 
 			if obsCount != 0 {
-				util.PrintInfoF("%s: %d changes", util.PI_RESULT, email, obsCount)
+				util.PrintInfoF(nil, "%s: %d changes", util.PI_RESULT, email, obsCount)
 				sum += obsCount
 			}
 		}
@@ -175,13 +180,13 @@ func checkNeededBinaries() map[string]bool {
 
 func printBinaryInfos(binary map[string]bool) {
 	if binary["git"] == false {
-		util.PrintInfo("git is not installed. git repositories will be skipped", util.PI_MILD_ERROR)
+		util.PrintInfo(logwriter, "git is not installed. git repositories will be skipped", util.PI_MILD_ERROR)
 	}
 	if binary["hg"] == false {
-		util.PrintInfo("hg is not installed. Mercurial repositories will be skipped", util.PI_MILD_ERROR)
+		util.PrintInfo(logwriter, "hg is not installed. Mercurial repositories will be skipped", util.PI_MILD_ERROR)
 	}
 	if binary["osc"] == false {
-		util.PrintInfo("osc is not installed. osc repositories will be skipped", util.PI_MILD_ERROR)
+		util.PrintInfo(logwriter, "osc is not installed. osc repositories will be skipped", util.PI_MILD_ERROR)
 	}
 }
 
@@ -192,6 +197,13 @@ func printBinaryInfos(binary map[string]bool) {
 func ScanContributions(configuration Configuration) ([]Contribution, error) {
 	contributions := []Contribution{}
 
+	logfile, err := os.Create("errors.log")
+	if err != nil {
+		return nil, err
+	}
+	defer logfile.Close()
+	logwriter = bufio.NewWriter(logfile)
+
 	binary := checkNeededBinaries()
 	printBinaryInfos(binary)
 
@@ -201,7 +213,8 @@ func ScanContributions(configuration Configuration) ([]Contribution, error) {
 		if binary["git"] {
 			sum, err := scanGit(project, configuration.Emails, contributions)
 			if err != nil {
-				return nil, err
+				//logwriter.WriteString(err.Error())
+				//return nil, err
 			}
 			sumCount += sum
 		}
@@ -209,7 +222,8 @@ func ScanContributions(configuration Configuration) ([]Contribution, error) {
 		if binary["hg"] {
 			sum, err := scanHg(project, configuration.Emails, contributions)
 			if err != nil {
-				return nil, err
+				//logwriter.WriteString(err.Error())
+				//return nil, err
 			}
 			sumCount += sum
 		}
@@ -220,7 +234,8 @@ func ScanContributions(configuration Configuration) ([]Contribution, error) {
 		if binary["osc"] {
 			sum, err := scanOBS(project, configuration.Emails, contributions)
 			if err != nil {
-				return nil, err
+				//logwriter.WriteString(err.Error())
+				//return nil, err
 			}
 			sumCount += sum
 		}
@@ -231,5 +246,6 @@ func ScanContributions(configuration Configuration) ([]Contribution, error) {
 		}
 	}
 
+	logwriter.Flush()
 	return contributions, nil
 }
