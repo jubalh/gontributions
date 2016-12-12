@@ -2,6 +2,8 @@ package gontrib
 
 import (
 	"os"
+	"path/filepath"
+	"strings"
 	"testing"
 
 	"github.com/jubalh/gontributions/vcs/mediawiki"
@@ -22,10 +24,20 @@ func TestScanContributions(t *testing.T) {
 	}
 
 	contributions, err := ScanContributions(configuration)
-	os.RemoveAll("repos-git")
-	os.RemoveAll("repos-obs")
 	if err != nil {
 		t.Errorf("Got an error scanning contributions: " + err.Error())
+	}
+	os.RemoveAll("repos-git")
+	os.RemoveAll("repos-obs")
+	os.RemoveAll("repos-hg")
+
+	files, err := filepath.Glob("repos-*")
+	if err != nil {
+		t.Errorf("Got an error looking for repos- directories " + err.Error())
+	}
+	if len(files) >= 1 {
+		s := strings.Join(files, ", ")
+		t.Errorf("There are 'repo-' directories still present: " + s)
 	}
 
 	for i, contribution := range contributions {
