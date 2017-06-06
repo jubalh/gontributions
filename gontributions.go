@@ -162,8 +162,7 @@ func run(ctx *cli.Context) error {
 		// Use template from user defined folder
 		absoluteTemplatePath := filepath.Join(templatesPath, templateName)
 		if !util.FileExists(absoluteTemplatePath) {
-			var s string
-			fmt.Sprintf(s, "Template file %s does not exist\n", absoluteTemplatePath)
+			s := fmt.Sprintf("Template file %s does not exist\n", absoluteTemplatePath)
 			return cli.NewExitError(s, 1)
 		}
 		data, err := ioutil.ReadFile(absoluteTemplatePath)
