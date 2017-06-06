@@ -20,9 +20,17 @@ import (
 	"github.com/jubalh/gontributions/vcs/obs"
 )
 
+// Summary hold the overall nr of contributions and projects
+// we do it like this so we can calculate here, in templates its not supported
+type Summary struct {
+	TotalContributions int
+	ProjectCount       int
+}
+
 // TemplateFill is there so it can easily be extended without breaking old templates/layouts
 type TemplateFill struct {
 	Contributions []gontrib.Contribution
+	Summary       Summary
 }
 
 const (
@@ -51,6 +59,11 @@ func putdate() string {
 // into a template.
 func fillTemplate(contributions []gontrib.Contribution, tempContent string, writer io.Writer) {
 	tf := TemplateFill{Contributions: contributions}
+
+	for _, contribution := range contributions {
+		tf.Summary.TotalContributions += contribution.Count
+	}
+	tf.Summary.ProjectCount = len(contributions)
 
 	funcMap := template.FuncMap{
 		"putdate": putdate,

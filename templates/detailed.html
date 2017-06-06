@@ -3,7 +3,8 @@
 	<head>
 	</head>
 	<body>
-		<h1>List of open source contributions</h1>
+		<h1>List of my open source contributions</h1>
+		<p><i>Overall {{ .Summary.TotalContributions }} contributions in {{ .Summary.ProjectCount }} projects</i></p>
 		{{ range .Contributions }}
 		{{ if .Project.URL }}
 		<b><a href="{{ .Project.URL }}">{{ .Project.Name }}</a></b>
