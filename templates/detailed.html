@@ -22,6 +22,13 @@
 					{{ .Count }} contribution
 				{{ end }}
 				<br/>
+				{{ if .Project.Tags }}
+				Tags:
+				{{ range .Project.Tags }}
+				{{ . }}
+				{{ end }}
+				<br/>
+				{{ end }}
 				<br/>
 		{{ end }}
 		<i>Created on {{ putdate }} with <a href="https://github.com/jubalh/gontributions">gontributions</a></i>

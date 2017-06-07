@@ -26,6 +26,7 @@ type Project struct {
 	Hgrepos     []string
 	MediaWikis  []mediawiki.MediaWiki
 	Obs         []obs.OpenBuildService
+	Tags        []string
 }
 
 // Configuration holds the users E-Mail adresses
