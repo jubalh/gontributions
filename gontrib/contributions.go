@@ -120,7 +120,7 @@ func scanWiki(project Project, emails []string, contributions []Contribution) in
 		}
 
 		if wikiCount == 0 {
-			util.PrintInfoF(logwriter, "No edits for user %s", util.PI_MILD_ERROR, wiki.User)
+			util.PrintInfoF(logwriter, "No edits for user %s at %s", util.PI_MILD_ERROR, wiki.User, wiki.BaseUrl)
 		} else {
 			util.PrintInfoF(nil, "%d edits", util.PI_RESULT, wikiCount)
 			sum += wikiCount
