@@ -92,4 +92,4 @@ If you rely on Open Hub it will always look like Open Hub, if you create your ow
 **Can I see such a report please?**
 
 Glad you ask. Of course you can!  
-Take a look at [mine](http://iodoru.org/gontrib).
+Take a look at [mine](http://iodoru.org/gontrib.html).
