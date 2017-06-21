@@ -27,6 +27,7 @@ type Project struct {
 	MediaWikis  []mediawiki.MediaWiki
 	Obs         []obs.OpenBuildService
 	Tags        []string
+	Role        string
 }
 
 // Configuration holds the users E-Mail adresses

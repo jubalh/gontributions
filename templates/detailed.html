@@ -10,6 +10,11 @@
 		<b><a href="{{ .Project.URL }}">{{ .Project.Name }}</a></b>
 		{{ else }}
 		<b>{{ .Project.Name }}</b>
+
+		{{ if .Project.Role }}
+			<em>{{ .Project.Role }}</em>
+		{{ end }}
+
 		{{ end }}
 				<br/>
 				{{ if .Project.Description }}
