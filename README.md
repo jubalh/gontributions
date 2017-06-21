@@ -25,15 +25,21 @@ xdg-open output.html
 Choose another template for your overview
 
 ```
-gontributions --config gontrib.json --template detailed.html --output another.html
+gontributions --config gontrib.json --template detailed --output another.html
 xdg-open another.html
 ```
 
 If you don't specify a configuration file it will automatically look for `gontrib.json`.
 
-Per default it expects a `templates/` directory to exist in which it will look for the template specified via the `--template` switch, or `default.html` if not specified.
+There are three built-in templates:
+- default
+- detailed
+- fancy
+If no template is defined it will use the built-in *default* template.
 
-The **GONTRIB_TEMPLATES_PTH** environment variable can be used to change the path in which it will look for this.
+The user can create his own templates and specify them via `--template`.
+Like `--template mine.html`.
+If the specified template contains no dot, *gontributions* will look in its built-in templates. If it contains dots it is treated as a path for a user created template.
 
 ## Usage
 Please read the USAGE.md file for more hints on how to use gontributions.

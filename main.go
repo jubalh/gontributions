@@ -10,6 +10,7 @@ import (
 	"io/ioutil"
 	"os"
 	"path/filepath"
+	"strings"
 	"time"
 
 	"gopkg.in/urfave/cli.v1"
@@ -34,8 +35,7 @@ type TemplateFill struct {
 }
 
 const (
-	templateFolderName = "templates"
-	templatesFolderEnv = "GONTRIB_TEMPLATES_PTH"
+	templateAssetFolderName = "templates"
 )
 
 // loadConfig loads a json configuration from filename
@@ -102,8 +102,8 @@ func main() {
 		},
 		cli.StringFlag{
 			Name:  "template",
-			Value: "default.html",
-			Usage: "Set which template to use",
+			Value: "default",
+			Usage: "Set which template to use. If it contains a dot it will be treated as a path to a user defined template. No dot means using an internal template",
 		},
 		cli.StringFlag{
 			Name:  "output",
@@ -131,27 +131,29 @@ func main() {
 	}
 }
 
+// getTemplateOrExitError gets the template, if the templatename doesnt contain
+// a dot, from the internal assets. if it contains a dot it is treated as a user
+// defined template and is treated like a path to the file.
+// it returns the template as a string
 func getTemplateOrExitError(ctx *cli.Context) (string, error) {
 	// Get users template selection
 	templateName := ctx.GlobalString("template")
 
-	// Get Template as string
-	templatesPath := os.Getenv(templatesFolderEnv)
-	if templatesPath == "" {
+	// if it does not contain a dot it is an internal template, from the assets
+	if strings.Contains(templateName, ".") == false {
 		// Use asset
-		data, err := Asset(filepath.Join(templateFolderName, templateName))
+		data, err := Asset(filepath.Join(templateAssetFolderName, templateName) + ".html")
 		if err != nil {
 			return "", cli.NewExitError(err.Error(), 1)
 		}
 		return string(data), nil
 	} else {
-		// Use template from user defined folder
-		absoluteTemplatePath := filepath.Join(templatesPath, templateName)
-		if !util.FileExists(absoluteTemplatePath) {
-			s := fmt.Sprintf("Template file %s does not exist\n", absoluteTemplatePath)
+		// user defined template, use templateName as path to file
+		if !util.FileExists(templateName) {
+			s := fmt.Sprintf("Template file %s does not exist\n", templateName)
 			return "", cli.NewExitError(s, 1)
 		}
-		data, err := ioutil.ReadFile(absoluteTemplatePath)
+		data, err := ioutil.ReadFile(templateName)
 		if err != nil {
 			return "", cli.NewExitError(err.Error(), 1)
 		}
