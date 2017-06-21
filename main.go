@@ -121,6 +121,11 @@ func main() {
 			Usage:  "Show an example configuration file",
 			Action: cmdExconf,
 		},
+		{
+			Name:   "list-templates",
+			Usage:  "List all built-in templates",
+			Action: cmdListTemplates,
+		},
 	}
 
 	app.Action = run
@@ -254,5 +259,17 @@ func cmdExconf(c *cli.Context) error {
 	}
 
 	fmt.Println(string(text))
+	return nil
+}
+
+func cmdListTemplates(c *cli.Context) error {
+	internalTemplates, err := AssetDir(templateAssetFolderName)
+	if err != nil {
+		return err
+	}
+
+	for _, t := range internalTemplates {
+		fmt.Println(t[:strings.Index(t, ".")])
+	}
 	return nil
 }
