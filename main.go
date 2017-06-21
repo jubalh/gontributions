@@ -126,6 +126,18 @@ func main() {
 			Usage:  "List all built-in templates",
 			Action: cmdListTemplates,
 		},
+		{
+			Name:   "show-template",
+			Usage:  "Display the content of a template",
+			Action: cmdShowTemplate,
+			Flags: []cli.Flag{
+				cli.StringFlag{
+					Name:  "name",
+					Value: "default",
+					Usage: "Display the content of a template",
+				},
+			},
+		},
 	}
 
 	app.Action = run
@@ -271,5 +283,17 @@ func cmdListTemplates(c *cli.Context) error {
 	for _, t := range internalTemplates {
 		fmt.Println(t[:strings.Index(t, ".")])
 	}
+	return nil
+}
+
+func cmdShowTemplate(c *cli.Context) error {
+	template := c.String("name")
+
+	data, err := Asset(filepath.Join(templateAssetFolderName, template) + ".html")
+	if err != nil {
+		return err
+	}
+	fmt.Print(string(data))
+
 	return nil
 }
