@@ -43,6 +43,9 @@ vs
 
 ```
 gontributions exconf > example.json
+gontributions show-template --name fancy > superman-template.html
 vi superman-template.html
 gontributions --config example.json --template superman-template.html
 ```
+
+You can use `list-templates` to show you which templates are built in, and `show-template --name default` to print it on standard output.
