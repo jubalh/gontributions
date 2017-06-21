@@ -35,6 +35,7 @@ There are three built-in templates:
 - default
 - detailed
 - fancy
+
 If no template is defined it will use the built-in *default* template.
 
 The user can create his own templates and specify them via `--template`.
