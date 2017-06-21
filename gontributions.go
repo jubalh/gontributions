@@ -51,6 +51,8 @@ func loadConfig(filename string) (gontribs gontrib.Configuration, err error) {
 	return
 }
 
+// putdate() returns the current date.
+// Meant for the template.
 func putdate() string {
 	return time.Now().Local().Format("2006-01-02")
 }
@@ -129,6 +131,56 @@ func main() {
 	}
 }
 
+func getTemplateOrExitError(ctx *cli.Context) (string, error) {
+	// Get users template selection
+	templateName := ctx.GlobalString("template")
+
+	// Get Template as string
+	templatesPath := os.Getenv(templatesFolderEnv)
+	if templatesPath == "" {
+		// Use asset
+		data, err := Asset(filepath.Join(templateFolderName, templateName))
+		if err != nil {
+			return "", cli.NewExitError(err.Error(), 1)
+		}
+		return string(data), nil
+	} else {
+		// Use template from user defined folder
+		absoluteTemplatePath := filepath.Join(templatesPath, templateName)
+		if !util.FileExists(absoluteTemplatePath) {
+			s := fmt.Sprintf("Template file %s does not exist\n", absoluteTemplatePath)
+			return "", cli.NewExitError(s, 1)
+		}
+		data, err := ioutil.ReadFile(absoluteTemplatePath)
+		if err != nil {
+			return "", cli.NewExitError(err.Error(), 1)
+		}
+		return string(data), nil
+	}
+}
+
+// notifyOnErrors; in case of a pull, update or other error regarding the checkout and
+// processing of contributions; will print a message and the path to the error log
+// otherwise if will remove any existing 'errors.log' (old errors from last run).
+func notifyOnErrors() {
+	errorfile, err := os.Open("errors.log")
+	if err != nil {
+		fmt.Println(err.Error())
+		return
+	}
+	defer errorfile.Close()
+	fi, err := errorfile.Stat()
+	if err != nil {
+		fmt.Println(err.Error())
+		return
+	}
+	if fi.Size() > 0 {
+		util.PrintInfoF(nil, "Some contributions could not be checked. See: errors.log", util.PI_ERROR)
+	} else {
+		os.Remove("errors.log")
+	}
+}
+
 // Run will handle the functionallity.
 func run(ctx *cli.Context) error {
 	// Load specified json configuration file
@@ -144,42 +196,22 @@ func run(ctx *cli.Context) error {
 		return cli.NewExitError(err.Error(), 1)
 	}
 
-	// Get users template selection
-	templateName := ctx.GlobalString("template")
-
-	var templateData string
-
-	// Get Template as templateData string
-	templatesPath := os.Getenv(templatesFolderEnv)
-	if templatesPath == "" {
-		// Use asset
-		data, err := Asset(filepath.Join(templateFolderName, templateName))
-		if err != nil {
-			return cli.NewExitError(err.Error(), 1)
-		}
-		templateData = string(data)
-	} else {
-		// Use template from user defined folder
-		absoluteTemplatePath := filepath.Join(templatesPath, templateName)
-		if !util.FileExists(absoluteTemplatePath) {
-			s := fmt.Sprintf("Template file %s does not exist\n", absoluteTemplatePath)
-			return cli.NewExitError(s, 1)
-		}
-		data, err := ioutil.ReadFile(absoluteTemplatePath)
-		if err != nil {
-			return cli.NewExitError(err.Error(), 1)
-		}
-		templateData = string(data)
+	// get template
+	templateData, err := getTemplateOrExitError(ctx)
+	if err != nil {
+		return err
 	}
 
 	gontrib.PullSources = !ctx.GlobalBool("no-pull")
 
+	// scan
 	contributions, err := gontrib.ScanContributions(configuration)
 	if err != nil {
 		util.PrintInfo(nil, err.Error(), util.PI_ERROR)
 		return cli.NewExitError(err.Error(), 1)
 	}
 
+	// define output
 	outputPath := ctx.GlobalString("output")
 	f, err := os.Create(outputPath)
 	if err != nil {
@@ -195,22 +227,7 @@ func run(ctx *cli.Context) error {
 
 	util.PrintInfoF(nil, "\nReport saved in: %s", util.PI_INFO, outputPath)
 
-	errorfile, err := os.Open("errors.log")
-	if err != nil {
-		fmt.Println(err.Error())
-		return nil
-	}
-	defer errorfile.Close()
-	fi, err := errorfile.Stat()
-	if err != nil {
-		fmt.Println(err.Error())
-		return nil
-	}
-	if fi.Size() > 0 {
-		util.PrintInfoF(nil, "Some contributions could not be checked. See: errors.log", util.PI_ERROR)
-	} else {
-		os.Remove("errors.log")
-	}
+	notifyOnErrors()
 
 	return nil
 }
