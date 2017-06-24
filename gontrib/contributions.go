@@ -2,8 +2,10 @@ package gontrib
 
 import (
 	"bufio"
+	"fmt"
 	"os"
 	"path/filepath"
+	"sync"
 
 	"github.com/jubalh/gontributions/util"
 	"github.com/jubalh/gontributions/vcs/git"
@@ -44,11 +46,18 @@ type Contribution struct {
 	Count   int
 }
 
+type SumRet struct {
+	count int
+	err   error
+}
+
 // scanGit is a helper function for ScanContributions which takes care of the git part
 func scanGit(project Project, emails []string, contributions []Contribution) (int, error) {
 	var sum int
 	for _, repo := range project.Gitrepos {
+
 		util.PrintInfo(nil, "Working on "+repo, util.PI_TASK)
+
 		if PullSources {
 			err := git.GetLatestRepo(repo)
 			if err != nil {
@@ -56,17 +65,37 @@ func scanGit(project Project, emails []string, contributions []Contribution) (in
 				return 0, err
 			}
 		}
-		for _, email := range emails {
-			path := filepath.Join("repos-git", util.LocalRepoName(repo))
-			gitCount, err := git.CountCommits(path, email)
-			if err != nil {
-				return 0, err
-			}
 
-			if gitCount != 0 {
-				util.PrintInfoF(nil, "%s: %d commits", util.PI_RESULT, email, gitCount)
-				sum += gitCount
-			}
+		waitGroup := &sync.WaitGroup{}
+		waitGroup.Add(len(emails))
+
+		ch := make(chan SumRet)
+		for _, email := range emails {
+			go func() {
+				defer waitGroup.Done()
+				fmt.Println(repo)
+
+				path := filepath.Join("repos-git", util.LocalRepoName(repo))
+				gitCount, err := git.CountCommits(path, email)
+				if err != nil {
+					//return 0, err
+					return
+				}
+
+				if gitCount != 0 {
+					util.PrintInfoF(nil, "%s: %d commits", util.PI_RESULT, email, gitCount)
+				}
+
+				ch <- SumRet{count: gitCount, err: err}
+			}()
+		}
+
+		waitGroup.Wait()
+
+		fmt.Println("end")
+		for range emails {
+			r := <-ch
+			sum += r.count
 		}
 	}
 	return sum, nil
