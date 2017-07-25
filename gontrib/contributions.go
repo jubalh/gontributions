@@ -58,11 +58,14 @@ func scanGit(project Project, emails []string, contributions []Contribution) (in
 					if cerr.Update {
 						util.PrintInfoF(logwriter, "Cannot update repo %s: %s", util.PI_MILD_ERROR, repo, cerr.Error())
 						stop = false
+					} else if cerr.Clone {
+						util.PrintInfoF(logwriter, "Cannot checkout repo %s: %s", util.PI_MILD_ERROR, repo, cerr.Error())
 					}
 					//TODO maybe check for cerr.Clone instead of using stop and the general error message
+				} else {
+					util.PrintInfoF(logwriter, "Problem loading repo %s: %s", util.PI_MILD_ERROR, repo, err.Error())
 				}
 				if stop == true {
-					util.PrintInfoF(logwriter, "Problem loading repo %s: %s", util.PI_MILD_ERROR, repo, err.Error())
 					return 0, err
 				}
 			}
@@ -96,11 +99,14 @@ func scanHg(project Project, emails []string, contributions []Contribution) (int
 					if cerr.Update {
 						util.PrintInfoF(logwriter, "Cannot update repo %s: %s", util.PI_MILD_ERROR, repo, cerr.Error())
 						stop = false
+					} else if cerr.Clone {
+						util.PrintInfoF(logwriter, "Cannot checkout repo %s: %s", util.PI_MILD_ERROR, repo, cerr.Error())
 					}
 					//TODO maybe check for cerr.Clone instead of using stop and the general error message
+				} else {
+					util.PrintInfoF(logwriter, "Problem loading repo %s: %s", util.PI_MILD_ERROR, repo, err.Error())
 				}
 				if stop == true {
-					util.PrintInfoF(logwriter, "Problem loading repo %s: %s", util.PI_MILD_ERROR, repo, err.Error())
 					return 0, err
 				}
 			}
@@ -166,11 +172,14 @@ Loop_obs:
 					if cerr.Update {
 						util.PrintInfoF(logwriter, "Cannot update repo %s: %s", util.PI_MILD_ERROR, obsEntry.Repo, cerr.Error())
 						stop = false
+					} else if cerr.Clone {
+						util.PrintInfoF(logwriter, "Cannot checkout repo %s: %s", util.PI_MILD_ERROR, obsEntry.Repo, cerr.Error())
 					}
 					//TODO maybe check for cerr.Clone instead of using stop and the general error message
+				} else {
+					util.PrintInfoF(logwriter, "Problem loading repo %s: %s", util.PI_MILD_ERROR, obsEntry.Repo, err.Error())
 				}
 				if stop == true {
-					util.PrintInfoF(logwriter, "Problem loading repo %s: %s", util.PI_MILD_ERROR, obsEntry.Repo, err.Error())
 					return 0, err
 				}
 			}
