@@ -17,6 +17,16 @@ const (
 	PI_MILD_ERROR
 )
 
+type RepoError struct {
+	Update bool
+	Clone  bool
+	Err    error
+}
+
+func (r RepoError) Error() string {
+	return r.Err.Error()
+}
+
 // FileExists returns true if the file or directory exists
 // otherwise it will return false.
 func FileExists(path string) bool {

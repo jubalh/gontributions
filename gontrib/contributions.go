@@ -51,9 +51,19 @@ func scanGit(project Project, emails []string, contributions []Contribution) (in
 		util.PrintInfo(nil, "Working on "+repo, util.PI_TASK)
 		if PullSources {
 			err := git.GetLatestRepo(repo)
+			// if err only update error, but repo is there then still count commits
 			if err != nil {
-				util.PrintInfoF(logwriter, "Problem loading repo %s: %s", util.PI_MILD_ERROR, repo, err.Error())
-				return 0, err
+				stop := true
+				if cerr, ok := err.(*util.RepoError); ok {
+					if cerr.Update {
+						util.PrintInfoF(logwriter, "Cannot update repo %s: %s", util.PI_MILD_ERROR, repo, cerr.Error())
+						stop = false
+					}
+				}
+				if stop == true {
+					util.PrintInfoF(logwriter, "Problem loading repo %s: %s", util.PI_MILD_ERROR, repo, err.Error())
+					return 0, err
+				}
 			}
 		}
 		for _, email := range emails {
