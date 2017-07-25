@@ -42,6 +42,14 @@ func checkoutRepo(info OpenBuildService) error {
 	cmdOutput := &bytes.Buffer{}
 	cmd.Stdout = cmdOutput
 	err := cmd.Run()
+
+	if err != nil {
+		cerr := &util.RepoError{}
+		cerr.Clone = true
+		cerr.Err = err
+		return cerr
+	}
+
 	return err
 }
 
@@ -52,7 +60,15 @@ func updateRepo(info OpenBuildService) error {
 	cmdOutput := &bytes.Buffer{}
 	cmd.Stdout = cmdOutput
 	err := cmd.Run()
-	return err
+
+	if err != nil {
+		cerr := &util.RepoError{}
+		cerr.Update = true
+		cerr.Err = err
+		return cerr
+	}
+
+	return nil
 }
 
 // CountCommits returns the number of commits in the OpenBuildService

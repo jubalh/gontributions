@@ -48,7 +48,15 @@ func cloneRepo(rd RepoData) error {
 	err := cmd.Run()
 
 	fmt.Print(cmdOutput) //TODO: do we want it?
-	return err
+
+	if err != nil {
+		cerr := &util.RepoError{}
+		cerr.Clone = true
+		cerr.Err = err
+		return cerr
+	}
+
+	return nil
 }
 
 // updateRepo takes a RepoData struct and updates the repository
@@ -62,7 +70,15 @@ func updateRepo(rd RepoData) error {
 	err := cmd.Run()
 
 	fmt.Print(cmdOutput) //TODO: do we want it?
-	return err
+
+	if err != nil {
+		cerr := &util.RepoError{}
+		cerr.Clone = true
+		cerr.Err = err
+		return cerr
+	}
+
+	return nil
 }
 
 // CountCommits returns how often email occurs in the log for

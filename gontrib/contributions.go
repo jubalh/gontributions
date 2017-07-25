@@ -59,6 +59,7 @@ func scanGit(project Project, emails []string, contributions []Contribution) (in
 						util.PrintInfoF(logwriter, "Cannot update repo %s: %s", util.PI_MILD_ERROR, repo, cerr.Error())
 						stop = false
 					}
+					//TODO maybe check for cerr.Clone instead of using stop and the general error message
 				}
 				if stop == true {
 					util.PrintInfoF(logwriter, "Problem loading repo %s: %s", util.PI_MILD_ERROR, repo, err.Error())
@@ -90,8 +91,18 @@ func scanHg(project Project, emails []string, contributions []Contribution) (int
 		if PullSources {
 			err := hg.GetLatestRepo(repo)
 			if err != nil {
-				util.PrintInfo(logwriter, "Problem loading repo "+repo+": "+err.Error(), util.PI_MILD_ERROR)
-				return 0, err
+				stop := true
+				if cerr, ok := err.(*util.RepoError); ok {
+					if cerr.Update {
+						util.PrintInfoF(logwriter, "Cannot update repo %s: %s", util.PI_MILD_ERROR, repo, cerr.Error())
+						stop = false
+					}
+					//TODO maybe check for cerr.Clone instead of using stop and the general error message
+				}
+				if stop == true {
+					util.PrintInfoF(logwriter, "Problem loading repo %s: %s", util.PI_MILD_ERROR, repo, err.Error())
+					return 0, err
+				}
 			}
 		}
 		for _, email := range emails {
@@ -150,8 +161,18 @@ Loop_obs:
 		if PullSources {
 			err := obs.GetLatestRepo(obsEntry)
 			if err != nil {
-				util.PrintInfoF(logwriter, "Problem loading repo %s: %s", util.PI_MILD_ERROR, obsEntry.Repo, err.Error())
-				return 0, err
+				stop := true
+				if cerr, ok := err.(*util.RepoError); ok {
+					if cerr.Update {
+						util.PrintInfoF(logwriter, "Cannot update repo %s: %s", util.PI_MILD_ERROR, obsEntry.Repo, cerr.Error())
+						stop = false
+					}
+					//TODO maybe check for cerr.Clone instead of using stop and the general error message
+				}
+				if stop == true {
+					util.PrintInfoF(logwriter, "Problem loading repo %s: %s", util.PI_MILD_ERROR, obsEntry.Repo, err.Error())
+					return 0, err
+				}
 			}
 		}
 		for _, email := range emails {
