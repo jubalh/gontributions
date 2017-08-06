@@ -6,6 +6,13 @@ This program lists your open source contributions.
 They get printed on your terminal when running the program.
 Additionally an HTML page gets created. There are some templates in the `templates` directory. Feel free to add your own and create a pull request to this repository.
 
+Sometimes upstream repositories disappear. And with it your contributions.
+Initially I wrote this program as a way to back up all the repositories I contributed to and get a list of my contributions.
+Either because I was proud of them, or because I might wanted to look at them again.
+In any case, I just like backups.
+From there the program grew, to create a small overview in HTML format so you could show the projects you contribute to to others.
+
+## Configuration
 You need to create a json file containing your open source contributions. The format is pretty easy. It is best to create an example configuration file and adapt it.
 
 Create an example json configuration and adapt the example to your needs:
