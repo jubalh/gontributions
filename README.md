@@ -12,6 +12,8 @@ Either because I was proud of them, or because I might wanted to look at them ag
 In any case, I just like backups.
 From there the program grew, to create a small overview in HTML format so you could show the projects you contribute to to others.
 
+Please read [MEANING.md](MEANING.md) to learn more about what is tracked and how to interpret the information.
+
 ## Configuration
 You need to create a json file containing your open source contributions. The format is pretty easy. It is best to create an example configuration file and adapt it.
 
@@ -50,7 +52,7 @@ Like `--template mine.html`.
 If the specified template contains no dot, *gontributions* will look in its built-in templates. If it contains dots it is treated as a path for a user created template.
 
 ## Usage
-Please read the USAGE.md file for more hints on how to use gontributions.
+Please read the [USAGE.md](USAGE.md) file for more hints on how to use gontributions.
 
 ## Features
 Search for commits in:
