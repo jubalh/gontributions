@@ -60,7 +60,7 @@ func countCommit(t *testing.T, email string, url string, expected int) {
 }
 
 func setup() {
-	err := os.Mkdir(absoluteTargetPath, 0755)
+	err := os.MkdirAll(absoluteTargetPath, 0755)
 	if err != nil {
 		panic(err)
 	}
