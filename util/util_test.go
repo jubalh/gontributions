@@ -1,10 +1,21 @@
 package util
 
 import (
+	"errors"
 	"io/ioutil"
 	"os"
 	"testing"
 )
+
+func TestRepoError(t *testing.T) {
+	err := &RepoError{
+		Clone: true,
+		Err:   errors.New("an error")}
+	s := err.Error()
+	if s != "an error" {
+		t.Errorf("Expected 'an error' but got '%s'", s)
+	}
+}
 
 func TestBinaryInstalled(t *testing.T) {
 	if BinaryInstalled("git") == false {
