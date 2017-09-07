@@ -10,39 +10,26 @@ import (
 	"github.com/jubalh/gontributions/util"
 )
 
-// RepoData holds the URL of a repository,
-// the working directory where to execute the commands
-// in, and the name of the local repositor.
-type RepoData struct {
-	url              string
+type Git struct {
 	workingDirectory string
-	localName        string
 }
 
-// GetLatestRepo either clones a new repo or updates an existing one
-// into the 'repos' directory.
-func GetLatestRepo(url string) (err error) {
-	var local string
-
-	local = util.LocalRepoName(url)
-
-	rd := RepoData{url: url, workingDirectory: "repos-git", localName: local}
-
-	if util.FileExists(filepath.Join("repos-git", local)) {
-		err = updateRepo(rd)
-	} else {
-		err = cloneRepo(rd)
-	}
-	return
+func NewGit() Git {
+	return Git{workingDirectory: "repos-git"}
 }
 
-// cloneRepo takes a RepoData struct and clones the repository
-// specified in rd.
-func cloneRepo(rd RepoData) error {
-	//fmt.Printf("Running 'git clone %s %s' in %s\n", rd.url, rd.localName, rd.workingDirectory)
+func (g Git) GetWD() string {
+	return g.workingDirectory
+}
 
-	cmd := exec.Command("git", "clone", rd.url, rd.localName)
-	cmd.Dir = rd.workingDirectory
+// CloneRepo takes an url and the directory where it should be cloned to
+// in then checks out the directory there in a folder with the same name as
+// the last part as the URL
+func (g Git) CloneRepo(url string, wd string) error {
+	local := util.LocalRepoName(url)
+
+	cmd := exec.Command("git", "clone", url, local)
+	cmd.Dir = wd
 	cmdOutput := &bytes.Buffer{}
 	cmd.Stdout = cmdOutput
 	err := cmd.Run()
@@ -59,11 +46,12 @@ func cloneRepo(rd RepoData) error {
 	return nil
 }
 
-// updateRepo takes a RepoData struct and updates the repository
-// specified in rd.
-func updateRepo(rd RepoData) error {
+// UpdateRepo takes an URL and a working directory
+func (g Git) UpdateRepo(url string, wd string) error {
+	local := util.LocalRepoName(url)
+
 	cmd := exec.Command("git", "pull")
-	cmd.Dir = filepath.Join(rd.workingDirectory, rd.localName)
+	cmd.Dir = filepath.Join(wd, local)
 	cmdOutput := &bytes.Buffer{}
 	cmd.Stdout = cmdOutput
 	err := cmd.Run()

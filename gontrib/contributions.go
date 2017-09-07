@@ -6,6 +6,7 @@ import (
 	"path/filepath"
 
 	"github.com/jubalh/gontributions/util"
+	"github.com/jubalh/gontributions/vcs"
 	"github.com/jubalh/gontributions/vcs/git"
 	"github.com/jubalh/gontributions/vcs/hg"
 	"github.com/jubalh/gontributions/vcs/mediawiki"
@@ -47,10 +48,11 @@ type Contribution struct {
 // scanGit is a helper function for ScanContributions which takes care of the git part
 func scanGit(project Project, emails []string, contributions []Contribution) (int, error) {
 	var sum int
+	g := git.NewGit()
 	for _, repo := range project.Gitrepos {
 		util.PrintInfo(os.Stdout, "Working on "+repo, util.PI_TASK)
 		if PullSources {
-			err := git.GetLatestRepo(repo)
+			err := vcs.GetLatestRepo(repo, g)
 			// if err only update error, but repo is there then still count commits
 			if err != nil {
 				stop := true
@@ -89,10 +91,11 @@ func scanGit(project Project, emails []string, contributions []Contribution) (in
 // scanHg is a helper function for ScanContributions which takes care of the git part
 func scanHg(project Project, emails []string, contributions []Contribution) (int, error) {
 	var sum int
+	h := hg.NewHg()
 	for _, repo := range project.Hgrepos {
 		util.PrintInfo(os.Stdout, "Working on "+repo, util.PI_TASK)
 		if PullSources {
-			err := hg.GetLatestRepo(repo)
+			err := vcs.GetLatestRepo(repo, h)
 			if err != nil {
 				stop := true
 				if cerr, ok := err.(*util.RepoError); ok {
