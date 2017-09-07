@@ -4,9 +4,9 @@ import (
 	"os"
 	"path/filepath"
 	"testing"
-)
 
-const reponame = "dummy-git-repo"
+	"github.com/jubalh/gontributions/util"
+)
 
 var (
 	repoURL            string
@@ -21,7 +21,7 @@ func init() {
 	}
 	repoURL = "https://github.com/jubalh/testrepo"
 	absoluteTargetPath = filepath.Join(wd, "testdata")
-	absoluteRepoPath = filepath.Join(absoluteTargetPath, reponame)
+	absoluteRepoPath = filepath.Join(absoluteTargetPath, util.LocalRepoName(repoURL))
 }
 
 func TestCloneRepo(t *testing.T) {
@@ -30,9 +30,8 @@ func TestCloneRepo(t *testing.T) {
 
 	t.Logf("Cloning\n\tfrom:%s\n\tto:%s\n", repoURL, absoluteTargetPath)
 
-	rd := RepoData{repoURL, absoluteTargetPath, reponame}
-
-	if err := cloneRepo(rd); err != nil {
+	g := NewGit()
+	if err := g.CloneRepo(repoURL, absoluteTargetPath); err != nil {
 		t.Error("Error: ", err)
 		// Does not make any sense to continue if we can not reliably clone a repo.
 		t.FailNow()
@@ -43,23 +42,22 @@ func TestCountCommits(t *testing.T) {
 	setup()
 	defer teardown()
 
-	rd := RepoData{repoURL, absoluteTargetPath, reponame}
-	err := cloneRepo(rd)
-	if err != nil {
+	g := NewGit()
+	if err := g.CloneRepo(repoURL, absoluteTargetPath); err != nil {
 		t.Error("Error: ", err)
 	}
 
-	countCommit(t, "jubalh@openmailbox.org", absoluteRepoPath, 1)
-	countCommit(t, "bilbo@shire.ch", absoluteRepoPath, 0)
+	countCommit(t, g, "jubalh@openmailbox.org", absoluteRepoPath, 1)
+	countCommit(t, g, "bilbo@shire.ch", absoluteRepoPath, 0)
 }
 
-func countCommit(t *testing.T, email string, url string, expected int) {
-	count, err := CountCommits(url, email)
+func countCommit(t *testing.T, g Git, email string, path string, expected int) {
+	count, err := g.Count(path, email)
 	if err != nil {
 		t.Error("Unexpected error: ", err)
 	}
 	if count != expected {
-		t.Errorf("CountCommits returned: %d, expected: %d", count, expected)
+		t.Errorf("Count returned: %d, expected: %d", count, expected)
 	}
 }
 
