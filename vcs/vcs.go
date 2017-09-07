@@ -10,6 +10,7 @@ type VCS interface {
 	CloneRepo(url string, wd string) error
 	UpdateRepo(url string, wd string) error
 	GetWD() string
+	Count(path string, email string) (count int, err error)
 }
 
 // GetLatestRepo either clones a new repo or updates an existing one

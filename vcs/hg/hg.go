@@ -69,9 +69,9 @@ func (h Hg) UpdateRepo(url string, wd string) error {
 	return nil
 }
 
-// CountCommits returns how often email occurs in the log for
+// Count returns how often email occurs in the log for
 // the hg repository at url.
-func CountCommits(path string, email string) (count int, err error) {
+func (h Hg) Count(path string, email string) (count int, err error) {
 	cmd := exec.Command("hg", "log", "--template", "{author}\n", "-u", email)
 	cmd.Dir = path
 	cmdOutput := &bytes.Buffer{}

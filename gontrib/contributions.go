@@ -73,8 +73,8 @@ func scanGit(project Project, emails []string, contributions []Contribution) (in
 			}
 		}
 		for _, email := range emails {
-			path := filepath.Join("repos-git", util.LocalRepoName(repo))
-			gitCount, err := git.CountCommits(path, email)
+			path := filepath.Join(g.GetWD(), util.LocalRepoName(repo))
+			gitCount, err := g.Count(path, email)
 			if err != nil {
 				return 0, err
 			}
@@ -115,8 +115,8 @@ func scanHg(project Project, emails []string, contributions []Contribution) (int
 			}
 		}
 		for _, email := range emails {
-			path := filepath.Join("repos-hg", util.LocalRepoName(repo))
-			hgCount, err := hg.CountCommits(path, email)
+			path := filepath.Join(h.GetWD(), util.LocalRepoName(repo))
+			hgCount, err := h.Count(path, email)
 			if err != nil {
 				return 0, err
 			}

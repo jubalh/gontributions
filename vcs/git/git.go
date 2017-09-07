@@ -68,9 +68,9 @@ func (g Git) UpdateRepo(url string, wd string) error {
 	return nil
 }
 
-// CountCommits returns how often email occurs in the log for
+// Count returns how often email occurs in the log for
 // the git repository at url.
-func CountCommits(path string, email string) (count int, err error) {
+func (g Git) Count(path string, email string) (count int, err error) {
 	authorSwitch := "--author=" + email
 	cmd := exec.Command("git", "log", "--pretty=tformat:%s", authorSwitch)
 	cmd.Dir = path
