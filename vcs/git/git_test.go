@@ -6,9 +6,12 @@ import (
 	"testing"
 )
 
+const reponame = "dummy-git-repo"
+
 var (
-	absoluteBaseRepoPath string
-	absoluteTargetPath   string
+	repoURL            string
+	absoluteTargetPath string
+	absoluteRepoPath   string
 )
 
 func init() {
@@ -16,17 +19,18 @@ func init() {
 	if err != nil {
 		panic(err)
 	}
-	absoluteBaseRepoPath = filepath.Join(wd, "testdata", "dummy-git-repo")
-	absoluteTargetPath = filepath.Join(wd, "testdata", "repos")
+	repoURL = "https://github.com/jubalh/testrepo"
+	absoluteTargetPath = filepath.Join(wd, "testdata")
+	absoluteRepoPath = filepath.Join(absoluteTargetPath, reponame)
 }
 
 func TestCloneRepo(t *testing.T) {
 	setup()
 	defer teardown()
 
-	t.Logf("Cloning\n\tfrom:%s\n\tto:%s\n", absoluteBaseRepoPath, absoluteTargetPath)
+	t.Logf("Cloning\n\tfrom:%s\n\tto:%s\n", repoURL, absoluteTargetPath)
 
-	rd := RepoData{absoluteBaseRepoPath, absoluteTargetPath, "dummy-git-repo"}
+	rd := RepoData{repoURL, absoluteTargetPath, reponame}
 
 	if err := cloneRepo(rd); err != nil {
 		t.Error("Error: ", err)
@@ -39,14 +43,14 @@ func TestCountCommits(t *testing.T) {
 	setup()
 	defer teardown()
 
-	rd := RepoData{absoluteBaseRepoPath, absoluteTargetPath, "dummy-git-repo"}
+	rd := RepoData{repoURL, absoluteTargetPath, reponame}
 	err := cloneRepo(rd)
 	if err != nil {
 		t.Error("Error: ", err)
 	}
 
-	countCommit(t, "jubalh@openmailbox.org", rd.url, 1)
-	countCommit(t, "bilbo@shire.ch", rd.url, 0)
+	countCommit(t, "jubalh@openmailbox.org", absoluteRepoPath, 1)
+	countCommit(t, "bilbo@shire.ch", absoluteRepoPath, 0)
 }
 
 func countCommit(t *testing.T, email string, url string, expected int) {
