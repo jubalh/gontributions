@@ -45,14 +45,13 @@ type Contribution struct {
 	Count   int
 }
 
-// scanGit is a helper function for ScanContributions which takes care of the git part
-func scanGit(project Project, emails []string, contributions []Contribution) (int, error) {
+// scan is a helper function for ScanContributions which takes care of the git part
+func scan(v vcs.VCS, project Project, emails []string, contributions []Contribution) (int, error) {
 	var sum int
-	g := git.NewGit()
 	for _, repo := range project.Gitrepos {
 		util.PrintInfo(os.Stdout, "Working on "+repo, util.PI_TASK)
 		if PullSources {
-			err := vcs.GetLatestRepo(repo, g)
+			err := vcs.GetLatestRepo(repo, v)
 			// if err only update error, but repo is there then still count commits
 			if err != nil {
 				stop := true
@@ -73,8 +72,8 @@ func scanGit(project Project, emails []string, contributions []Contribution) (in
 			}
 		}
 		for _, email := range emails {
-			path := filepath.Join(g.GetWD(), util.LocalRepoName(repo))
-			gitCount, err := g.Count(path, email)
+			path := filepath.Join(v.GetWD(), util.LocalRepoName(repo))
+			gitCount, err := v.Count(path, email)
 			if err != nil {
 				return 0, err
 			}
@@ -82,48 +81,6 @@ func scanGit(project Project, emails []string, contributions []Contribution) (in
 			if gitCount != 0 {
 				util.PrintInfoF(os.Stdout, "%s: %d commits", util.PI_RESULT, email, gitCount)
 				sum += gitCount
-			}
-		}
-	}
-	return sum, nil
-}
-
-// scanHg is a helper function for ScanContributions which takes care of the git part
-func scanHg(project Project, emails []string, contributions []Contribution) (int, error) {
-	var sum int
-	h := hg.NewHg()
-	for _, repo := range project.Hgrepos {
-		util.PrintInfo(os.Stdout, "Working on "+repo, util.PI_TASK)
-		if PullSources {
-			err := vcs.GetLatestRepo(repo, h)
-			if err != nil {
-				stop := true
-				if cerr, ok := err.(*util.RepoError); ok {
-					if cerr.Update {
-						util.PrintInfoF(logwriter, "Cannot update repo %s: %s", util.PI_MILD_ERROR, repo, cerr.Error())
-						stop = false
-					} else if cerr.Clone {
-						util.PrintInfoF(logwriter, "Cannot checkout repo %s: %s", util.PI_MILD_ERROR, repo, cerr.Error())
-					}
-					//TODO maybe check for cerr.Clone instead of using stop and the general error message
-				} else {
-					util.PrintInfoF(logwriter, "Problem loading repo %s: %s", util.PI_MILD_ERROR, repo, err.Error())
-				}
-				if stop == true {
-					return 0, err
-				}
-			}
-		}
-		for _, email := range emails {
-			path := filepath.Join(h.GetWD(), util.LocalRepoName(repo))
-			hgCount, err := h.Count(path, email)
-			if err != nil {
-				return 0, err
-			}
-
-			if hgCount != 0 {
-				util.PrintInfoF(os.Stdout, "%s: %d commits", util.PI_RESULT, email, hgCount)
-				sum += hgCount
 			}
 		}
 	}
@@ -256,7 +213,8 @@ func ScanContributions(configuration Configuration) ([]Contribution, error) {
 		var sumCount int
 
 		if binary["git"] {
-			sum, err := scanGit(project, configuration.Emails, contributions)
+			g := git.NewGit()
+			sum, err := scan(g, project, configuration.Emails, contributions)
 			if err != nil {
 				logwriter.WriteString(err.Error())
 				return nil, err
@@ -265,7 +223,8 @@ func ScanContributions(configuration Configuration) ([]Contribution, error) {
 		}
 
 		if binary["hg"] {
-			sum, err := scanHg(project, configuration.Emails, contributions)
+			h := hg.NewHg()
+			sum, err := scan(h, project, configuration.Emails, contributions)
 			if err != nil {
 				logwriter.WriteString(err.Error())
 				return nil, err
