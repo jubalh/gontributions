@@ -255,8 +255,8 @@ func ScanContributions(configuration Configuration) ([]Contribution, error) {
 		if binary["git"] {
 			sum, err := scanGit(project, configuration.Emails, contributions)
 			if err != nil {
-				//logwriter.WriteString(err.Error())
-				//return nil, err
+				logwriter.WriteString(err.Error())
+				return nil, err
 			}
 			sumCount += sum
 		}
@@ -264,8 +264,8 @@ func ScanContributions(configuration Configuration) ([]Contribution, error) {
 		if binary["hg"] {
 			sum, err := scanHg(project, configuration.Emails, contributions)
 			if err != nil {
-				//logwriter.WriteString(err.Error())
-				//return nil, err
+				logwriter.WriteString(err.Error())
+				return nil, err
 			}
 			sumCount += sum
 		}
@@ -276,8 +276,8 @@ func ScanContributions(configuration Configuration) ([]Contribution, error) {
 		if binary["osc"] {
 			sum, err := scanOBS(project, configuration.Emails, contributions)
 			if err != nil {
-				//logwriter.WriteString(err.Error())
-				//return nil, err
+				logwriter.WriteString(err.Error())
+				return nil, err
 			}
 			sumCount += sum
 		}
