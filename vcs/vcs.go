@@ -16,7 +16,7 @@ type VCS interface {
 // GetLatestRepo either clones a new repo or updates an existing one
 // into the 'repos' directory.
 func GetLatestRepo(url string, v VCS) (err error) {
-	var local string
+	local := util.LocalRepoName(url)
 
 	if util.FileExists(filepath.Join(v.GetWD(), local)) {
 		err = v.UpdateRepo(url, v.GetWD())

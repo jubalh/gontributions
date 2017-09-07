@@ -46,9 +46,9 @@ type Contribution struct {
 }
 
 // scan is a helper function for ScanContributions which takes care of the git part
-func scan(v vcs.VCS, project Project, emails []string, contributions []Contribution) (int, error) {
+func scan(v vcs.VCS, repos []string, emails []string, contributions []Contribution) (int, error) {
 	var sum int
-	for _, repo := range project.Gitrepos {
+	for _, repo := range repos {
 		util.PrintInfo(os.Stdout, "Working on "+repo, util.PI_TASK)
 		if PullSources {
 			err := vcs.GetLatestRepo(repo, v)
@@ -214,7 +214,7 @@ func ScanContributions(configuration Configuration) ([]Contribution, error) {
 
 		if binary["git"] {
 			g := git.NewGit()
-			sum, err := scan(g, project, configuration.Emails, contributions)
+			sum, err := scan(g, project.Gitrepos, configuration.Emails, contributions)
 			if err != nil {
 				logwriter.WriteString(err.Error())
 				return nil, err
@@ -224,7 +224,7 @@ func ScanContributions(configuration Configuration) ([]Contribution, error) {
 
 		if binary["hg"] {
 			h := hg.NewHg()
-			sum, err := scan(h, project, configuration.Emails, contributions)
+			sum, err := scan(h, project.Hgrepos, configuration.Emails, contributions)
 			if err != nil {
 				logwriter.WriteString(err.Error())
 				return nil, err
