@@ -1,9 +1,11 @@
 package util
 
 import (
+	"bytes"
 	"errors"
 	"io/ioutil"
 	"os"
+	"strings"
 	"testing"
 )
 
@@ -19,7 +21,7 @@ func TestRepoError(t *testing.T) {
 
 func TestBinaryInstalled(t *testing.T) {
 	if BinaryInstalled("git") == false {
-		t.Errorf("Failed: git should be installed on this computer")
+		t.Error("Failed: git should be installed on this computer")
 	}
 }
 
@@ -30,7 +32,7 @@ func TestFileExists(t *testing.T) {
 	}
 	err := ioutil.WriteFile("testfile", []byte("foo"), 0644)
 	if err != nil {
-		t.Error("Unexpected error:", err)
+		t.Errorf("Unexpected error: %s", err)
 		return
 	}
 	if !FileExists("testfile") {
@@ -43,11 +45,24 @@ func TestLocalRepoName(t *testing.T) {
 	expected := "nudoku"
 	actual := LocalRepoName("https://github.com/jubalh/nudoku")
 	if actual != expected {
-		t.Error("Failed")
+		t.Errorf("Expected '%s' got '%s'", expected, actual)
 	}
 	expected = "repo.git"
 	actual = LocalRepoName("git@somewhere.com:repo.git")
 	if actual != expected {
-		t.Error("Failed")
+		t.Errorf("Expected '%s' got '%s'", expected, actual)
+	}
+}
+
+func TestPrintInfo(t *testing.T) {
+	var b bytes.Buffer
+
+	msg := "message"
+
+	PrintInfo(&b, msg, PI_INFO)
+	actual := strings.TrimSpace(b.String())
+
+	if actual != msg {
+		t.Errorf("Expected '%s' got '%s'", msg, actual)
 	}
 }
