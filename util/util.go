@@ -1,8 +1,8 @@
 package util
 
 import (
-	"bufio"
 	"fmt"
+	"io"
 	"os"
 	"path"
 	"runtime"
@@ -67,8 +67,14 @@ func LocalRepoName(url string) string {
 }
 
 // PrintInfo prints text with a marker to easily spot it.
-func PrintInfo(w *bufio.Writer, text string, mode int) {
+func PrintInfo(w io.Writer, text string, mode int) {
 	var pre string
+
+	if w == nil {
+		// should not happen
+		panic("PrintInfo call without Writer")
+	}
+
 	switch {
 	case mode == PI_INFO:
 		pre = ""
@@ -84,19 +90,10 @@ func PrintInfo(w *bufio.Writer, text string, mode int) {
 
 	line := pre + text
 
-	fmt.Println(line)
-
-	if w != nil {
-		_, err := w.WriteString(line + "\n")
-		if err != nil {
-			PrintInfo(nil, err.Error(), PI_ERROR)
-			return
-		}
-		w.Flush()
-	}
+	fmt.Fprintf(w, "%s\n", line)
 }
 
 // PrintInfo prints formatable text with a marker to easily spot it.
-func PrintInfoF(w *bufio.Writer, text string, mode int, args ...interface{}) {
+func PrintInfoF(w io.Writer, text string, mode int, args ...interface{}) {
 	PrintInfo(w, fmt.Sprintf(text, args...), mode)
 }

@@ -48,7 +48,7 @@ type Contribution struct {
 func scanGit(project Project, emails []string, contributions []Contribution) (int, error) {
 	var sum int
 	for _, repo := range project.Gitrepos {
-		util.PrintInfo(nil, "Working on "+repo, util.PI_TASK)
+		util.PrintInfo(os.Stdout, "Working on "+repo, util.PI_TASK)
 		if PullSources {
 			err := git.GetLatestRepo(repo)
 			// if err only update error, but repo is there then still count commits
@@ -78,7 +78,7 @@ func scanGit(project Project, emails []string, contributions []Contribution) (in
 			}
 
 			if gitCount != 0 {
-				util.PrintInfoF(nil, "%s: %d commits", util.PI_RESULT, email, gitCount)
+				util.PrintInfoF(os.Stdout, "%s: %d commits", util.PI_RESULT, email, gitCount)
 				sum += gitCount
 			}
 		}
@@ -90,7 +90,7 @@ func scanGit(project Project, emails []string, contributions []Contribution) (in
 func scanHg(project Project, emails []string, contributions []Contribution) (int, error) {
 	var sum int
 	for _, repo := range project.Hgrepos {
-		util.PrintInfo(nil, "Working on "+repo, util.PI_TASK)
+		util.PrintInfo(os.Stdout, "Working on "+repo, util.PI_TASK)
 		if PullSources {
 			err := hg.GetLatestRepo(repo)
 			if err != nil {
@@ -119,7 +119,7 @@ func scanHg(project Project, emails []string, contributions []Contribution) (int
 			}
 
 			if hgCount != 0 {
-				util.PrintInfoF(nil, "%s: %d commits", util.PI_RESULT, email, hgCount)
+				util.PrintInfoF(os.Stdout, "%s: %d commits", util.PI_RESULT, email, hgCount)
 				sum += hgCount
 			}
 		}
@@ -131,7 +131,7 @@ func scanHg(project Project, emails []string, contributions []Contribution) (int
 func scanWiki(project Project, emails []string, contributions []Contribution) int {
 	var sum int
 	for _, wiki := range project.MediaWikis {
-		util.PrintInfoF(nil, "Working on MediaWiki %s as %s", util.PI_TASK, wiki.BaseUrl, wiki.User)
+		util.PrintInfoF(os.Stdout, "Working on MediaWiki %s as %s", util.PI_TASK, wiki.BaseUrl, wiki.User)
 
 		wikiCount, err := mediawiki.GetUserEdits(wiki.BaseUrl, wiki.User)
 		if err != nil {
@@ -150,7 +150,7 @@ func scanWiki(project Project, emails []string, contributions []Contribution) in
 		if wikiCount == 0 {
 			util.PrintInfoF(logwriter, "No edits for user %s at %s", util.PI_MILD_ERROR, wiki.User, wiki.BaseUrl)
 		} else {
-			util.PrintInfoF(nil, "%d edits", util.PI_RESULT, wikiCount)
+			util.PrintInfoF(os.Stdout, "%d edits", util.PI_RESULT, wikiCount)
 			sum += wikiCount
 		}
 	}
@@ -162,7 +162,7 @@ func scanOBS(project Project, emails []string, contributions []Contribution) (in
 	var sum int
 Loop_obs:
 	for _, obsEntry := range project.Obs {
-		util.PrintInfo(nil, "Working on "+obsEntry.Repo, util.PI_TASK)
+		util.PrintInfo(os.Stdout, "Working on "+obsEntry.Repo, util.PI_TASK)
 
 		if PullSources {
 			err := obs.GetLatestRepo(obsEntry)
@@ -195,7 +195,7 @@ Loop_obs:
 			}
 
 			if obsCount != 0 {
-				util.PrintInfoF(nil, "%s: %d changes", util.PI_RESULT, email, obsCount)
+				util.PrintInfoF(os.Stdout, "%s: %d changes", util.PI_RESULT, email, obsCount)
 				sum += obsCount
 			}
 		}

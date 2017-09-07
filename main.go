@@ -194,7 +194,7 @@ func notifyOnErrors() {
 		return
 	}
 	if fi.Size() > 0 {
-		util.PrintInfoF(nil, "Some contributions could not be checked. See: errors.log", util.PI_ERROR)
+		util.PrintInfoF(os.Stderr, "Some contributions could not be checked. See: errors.log", util.PI_ERROR)
 	} else {
 		os.Remove("errors.log")
 	}
@@ -226,7 +226,7 @@ func run(ctx *cli.Context) error {
 	// scan
 	contributions, err := gontrib.ScanContributions(configuration)
 	if err != nil {
-		util.PrintInfo(nil, err.Error(), util.PI_ERROR)
+		util.PrintInfo(os.Stderr, err.Error(), util.PI_ERROR)
 		return cli.NewExitError(err.Error(), 1)
 	}
 
@@ -244,7 +244,7 @@ func run(ctx *cli.Context) error {
 		return cli.NewExitError(err.Error(), 1)
 	}
 
-	util.PrintInfoF(nil, "\nReport saved in: %s", util.PI_INFO, outputPath)
+	util.PrintInfoF(os.Stdout, "\nReport saved in: %s", util.PI_INFO, outputPath)
 
 	notifyOnErrors()
 
