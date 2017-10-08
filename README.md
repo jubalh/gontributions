@@ -59,7 +59,7 @@ Search for commits in:
 - [x] Git
 - [ ] Subversion
 - [x] Mercurial
-- [ ] Bazaar
+- [x] Bazaar
 - [x] Open Build Service
 
 - [x] support to count Wiki edits
