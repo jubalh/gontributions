@@ -81,7 +81,7 @@ You might want to read [HACKING.md](HACKING.md).
 ## FAQ
 **Does it have to be Open Source?**
 
-You could also add private repositories and just publish the finished report. Noone will learn about the location of the repos, your precious commits or your username. Still you would have a nice overview of what you did.
+You could also add private repositories and just publish the finished report. No one will learn about the location of the repos, your precious commits or your username. Still you would have a nice overview of what you did.
 
 Furthermore: if someone deletes a repository you contributed to, you still have your local copy if you use *gontributions* which will count into your contributions report. If we would just query some remote server you don't have any control over it. When it's deleted it's just gone. And your work lost.
 
