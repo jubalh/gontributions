@@ -200,7 +200,7 @@ func notifyOnErrors() {
 	}
 }
 
-// Run will handle the functionallity.
+// Run will handle the functionality.
 func run(ctx *cli.Context) error {
 	// Load specified json configuration file
 	configPath := ctx.GlobalString("config")
