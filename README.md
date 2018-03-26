@@ -74,8 +74,6 @@ Display:
 There are some features that would be nice to have, but I don't need them myself. I created [issues](https://github.com/jubalh/gontributions/issues) about them.
 Feel free to work on them or implement your own ideas.
 
-I try to have the `master` branch clear and only have working versions there. Please work on the `develop` branch and create a new `feature/count-my-hair` for every feature you implement.
-
 You might want to read [HACKING.md](HACKING.md).
 
 ## FAQ
