@@ -75,14 +75,14 @@ func scan(v vcs.VCS, repos []string, emails []string, contributions []Contributi
 		}
 		for _, email := range emails {
 			path := filepath.Join(v.GetWD(), util.LocalRepoName(repo))
-			gitCount, err := v.Count(path, email)
+			count, err := v.Count(path, email)
 			if err != nil {
 				return 0, err
 			}
 
-			if gitCount != 0 {
-				util.PrintInfoF(os.Stdout, "%s: %d commits", util.PI_RESULT, email, gitCount)
-				sum += gitCount
+			if count != 0 {
+				util.PrintInfoF(os.Stdout, "%s: %d commits", util.PI_RESULT, email, count)
+				sum += count
 			}
 		}
 	}
