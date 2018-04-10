@@ -63,6 +63,7 @@ Search for commits in:
 - [x] Open Build Service
 
 - [x] support to count Wiki edits
+- [x] count Debian Testing changelog entries
 
 Display:
 - [x] project name

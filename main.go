@@ -262,6 +262,7 @@ func cmdExconf(c *cli.Context) error {
 			{Name: "Funtoo", Description: "Linux distribution", URL: "http://funtoo.org/", Gitrepos: []string{"https://github.com/funtoo/ego", "https://github.com/funtoo/metro"}, MediaWikis: []mediawiki.MediaWiki{{BaseUrl: "http://funtoo.org", User: "jubalh"}}},
 			{Name: "openSUSE", Description: "Linux distribution", URL: "http://opensuse.org/", Obs: []obs.OpenBuildService{{Apiurl: "https://api.opensuse.org", Repo: "utilities/vifm"}}},
 			{Name: "prosody", Description: "A modern XMPP communication server", URL: "http://prosody.im/", Hgrepos: []string{"https://hg.prosody.im/prosody-modules"}, Tags: []string{"Lua", "XMPP"}},
+			{Name: "Debian", Description: "Debian Linux", Debian: []string{"nudoku"}},
 		},
 	}
 
