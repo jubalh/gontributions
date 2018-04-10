@@ -3,6 +3,7 @@
 repos-git/
 repos-obs/
 repos-hg/
+repos-debian/
 output.html
 cover.out
 gontributions
