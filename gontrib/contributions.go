@@ -7,6 +7,7 @@ import (
 
 	"github.com/jubalh/gontributions/util"
 	"github.com/jubalh/gontributions/vcs"
+	"github.com/jubalh/gontributions/vcs/debian"
 	"github.com/jubalh/gontributions/vcs/git"
 	"github.com/jubalh/gontributions/vcs/hg"
 	"github.com/jubalh/gontributions/vcs/mediawiki"
@@ -27,6 +28,7 @@ type Project struct {
 	Hgrepos     []string
 	MediaWikis  []mediawiki.MediaWiki
 	Obs         []obs.OpenBuildService
+	Debian      []string
 	Tags        []string
 	Role        string
 }
@@ -177,6 +179,10 @@ func checkNeededBinaries() map[string]bool {
 		m["osc"] = true
 		os.Mkdir("repos-obs", 0755)
 	}
+	if util.BinaryInstalled("wget") {
+		m["debian"] = true
+		os.Mkdir("repos-debian", 0755)
+	}
 	return m
 }
 
@@ -232,6 +238,14 @@ func ScanContributions(configuration Configuration) ([]Contribution, error) {
 			sumCount += sum
 		}
 
+		d := debian.NewDebian()
+		sum, err := scan(d, project.Debian, configuration.Emails, contributions)
+		if err != nil {
+			logwriter.WriteString(err.Error())
+			return nil, err
+			sumCount += sum
+		}
+
 		if binary["osc"] {
 			sum, err := scanOBS(project, configuration.Emails, contributions)
 			if err != nil {
@@ -241,7 +255,7 @@ func ScanContributions(configuration Configuration) ([]Contribution, error) {
 			sumCount += sum
 		}
 
-		sum := scanWiki(project, configuration.Emails, contributions)
+		sum = scanWiki(project, configuration.Emails, contributions)
 		sumCount += sum
 
 		if sumCount > 0 {
