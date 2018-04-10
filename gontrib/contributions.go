@@ -232,9 +232,6 @@ func ScanContributions(configuration Configuration) ([]Contribution, error) {
 			sumCount += sum
 		}
 
-		sum := scanWiki(project, configuration.Emails, contributions)
-		sumCount += sum
-
 		if binary["osc"] {
 			sum, err := scanOBS(project, configuration.Emails, contributions)
 			if err != nil {
@@ -243,6 +240,9 @@ func ScanContributions(configuration Configuration) ([]Contribution, error) {
 			}
 			sumCount += sum
 		}
+
+		sum := scanWiki(project, configuration.Emails, contributions)
+		sumCount += sum
 
 		if sumCount > 0 {
 			c := Contribution{project, sumCount}
