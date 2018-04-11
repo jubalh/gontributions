@@ -196,6 +196,9 @@ func printBinaryInfos(binary map[string]bool) {
 	if binary["osc"] == false {
 		util.PrintInfo(logwriter, "osc is not installed. osc repositories will be skipped", util.PI_MILD_ERROR)
 	}
+	if binary["debian"] == false {
+		util.PrintInfo(logwriter, "wget is not installed. Debian changelogs will be skipped", util.PI_MILD_ERROR)
+	}
 }
 
 // ScanContributions takes a Configuration containing a list of emails
@@ -238,11 +241,13 @@ func ScanContributions(configuration Configuration) ([]Contribution, error) {
 			sumCount += sum
 		}
 
-		d := debian.NewDebian()
-		sum, err := scan(d, project.Debian, configuration.Emails, contributions)
-		if err != nil {
-			logwriter.WriteString(err.Error())
-			return nil, err
+		if binary["debian"] {
+			d := debian.NewDebian()
+			sum, err := scan(d, project.Debian, configuration.Emails, contributions)
+			if err != nil {
+				logwriter.WriteString(err.Error())
+				return nil, err
+			}
 			sumCount += sum
 		}
 
@@ -255,7 +260,7 @@ func ScanContributions(configuration Configuration) ([]Contribution, error) {
 			sumCount += sum
 		}
 
-		sum = scanWiki(project, configuration.Emails, contributions)
+		sum := scanWiki(project, configuration.Emails, contributions)
 		sumCount += sum
 
 		if sumCount > 0 {
