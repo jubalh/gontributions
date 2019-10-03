@@ -2,8 +2,10 @@ package gontrib
 
 import (
 	"bufio"
+	"fmt"
 	"os"
 	"path/filepath"
+	"time"
 
 	"github.com/jubalh/gontributions/util"
 	"github.com/jubalh/gontributions/vcs"
@@ -31,6 +33,7 @@ type Project struct {
 	Debian      []string
 	Tags        []string
 	Role        string
+	OutFile     string
 }
 
 // Configuration holds the users E-Mail adresses
@@ -45,6 +48,19 @@ type Configuration struct {
 type Contribution struct {
 	Project Project
 	Count   int
+}
+
+func writeContribution(contrib Contribution, filename string) {
+	f, err := os.OpenFile(filename, os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)
+	if err != nil {
+		panic("Could not open file to write contributions")
+	}
+	defer f.Close()
+
+	checkTime := time.Now().Local().Format("2006-01-02 15:04:05")
+	// output format is [time] Project.Name:Project.URL:Count
+	line := fmt.Sprintf("[%s] %s:%s:%d\n", checkTime, contrib.Project.Name, contrib.Project.URL, contrib.Count)
+	f.WriteString(line)
 }
 
 // scan is a helper function for ScanContributions which takes care of the git part
@@ -265,6 +281,9 @@ func ScanContributions(configuration Configuration) ([]Contribution, error) {
 
 		if sumCount > 0 {
 			c := Contribution{project, sumCount}
+			if project.OutFile != "" {
+				writeContribution(c, project.OutFile)
+			}
 			contributions = append(contributions, c)
 		}
 	}

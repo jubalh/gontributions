@@ -257,7 +257,7 @@ func cmdExconf(c *cli.Context) error {
 	configuration := gontrib.Configuration{
 		Emails: []string{"jubalh@openmailbox.org", "g.bluehut@gmail.com"},
 		Projects: []gontrib.Project{
-			{Name: "nudoku", Description: "Ncurses sudoku game", Gitrepos: []string{"https://github.com/jubalh/nudoku"}, Tags: []string{"C", "Terminal", "Game"}, Role: "maintainer"},
+			{Name: "nudoku", Description: "Ncurses sudoku game", Gitrepos: []string{"https://github.com/jubalh/nudoku"}, Tags: []string{"C", "Terminal", "Game"}, Role: "maintainer", OutFile: "nudoku.contribs"},
 			{Name: "profanity", Description: "Ncurses based XMPP client", URL: "http://profanity.im/", Gitrepos: []string{"https://github.com/boothj5/profanity"}, Tags: []string{"C", "XMPP", "Terminal"}},
 			{Name: "Funtoo", Description: "Linux distribution", URL: "http://funtoo.org/", Gitrepos: []string{"https://github.com/funtoo/ego", "https://github.com/funtoo/metro"}, MediaWikis: []mediawiki.MediaWiki{{BaseUrl: "http://funtoo.org", User: "jubalh"}}},
 			{Name: "openSUSE", Description: "Linux distribution", URL: "http://opensuse.org/", Obs: []obs.OpenBuildService{{Apiurl: "https://api.opensuse.org", Repo: "utilities/vifm"}}},
