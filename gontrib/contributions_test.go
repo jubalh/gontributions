@@ -30,6 +30,7 @@ func TestScanContributions(t *testing.T) {
 	os.RemoveAll("repos-git")
 	os.RemoveAll("repos-obs")
 	os.RemoveAll("repos-hg")
+	os.RemoveAll("repos-debian")
 
 	files, err := filepath.Glob("repos-*")
 	if err != nil {
