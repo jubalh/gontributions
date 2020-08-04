@@ -47,7 +47,7 @@ func TestCountCommits(t *testing.T) {
 		t.Error("Error: ", err)
 	}
 
-	countCommit(t, h, "joe.stephenson36@gmail.com", absoluteRepoPath, 1)
+	countCommit(t, h, "joe.stephenson36@gmail.com", absoluteRepoPath, 2)
 	countCommit(t, h, "bilbo@shire.ch", absoluteRepoPath, 0)
 }
 
