@@ -1,3 +1,4 @@
+[![Build Status](https://travis-ci.org/jubalh/gontributions.svg?branch=master)] [![Code Coverage](https://codecov.io/gh/jubalh/gontributions/branch/master/graph/badge.svg)]
 # gontributions
 
 *open source contributions lister*
