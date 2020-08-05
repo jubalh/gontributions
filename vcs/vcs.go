@@ -6,6 +6,9 @@ import (
 	"github.com/jubalh/gontributions/util"
 )
 
+// VCS defines an interface for the types Git, OBS etc.
+// They all need to clone and update a repo.
+// get the working dir and count the commits based on a given email.
 type VCS interface {
 	CloneRepo(url string, wd string) error
 	UpdateRepo(url string, wd string) error
