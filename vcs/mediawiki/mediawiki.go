@@ -10,13 +10,13 @@ import (
 // MediaWiki holds the base URL of the wiki page to which later the
 // API call will get appended and the username to the wiki.
 type MediaWiki struct {
-	BaseUrl string
+	BaseURL string
 	User    string
 }
 
 // User field in MediaWikis response
 type User struct {
-	Id    int `json:"userid"`
+	ID    int `json:"userid"`
 	Name  string
 	Edits int `json:"editcount"`
 }
@@ -26,10 +26,10 @@ type Query struct {
 	Users []User `json:"users"`
 }
 
-// GetUserEdits calls wikiUrl MediaWiki API to retrieve the number of edits
+// GetUserEdits calls wikiURL MediaWiki API to retrieve the number of edits
 // the user username has done.
-func GetUserEdits(wikiUrl string, username string) (count int, err error) {
-	wikiURL, err := url.Parse(wikiUrl)
+func GetUserEdits(wikiURL string, username string) (count int, err error) {
+	wikiURL, err := url.Parse(wikiURL)
 	if err != nil {
 		return 0, errors.New("Not a valid URL")
 	}

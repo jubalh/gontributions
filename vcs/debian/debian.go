@@ -10,18 +10,22 @@ import (
 	"github.com/jubalh/gontributions/util"
 )
 
+// Debian is the type to work with Debian contributions
 type Debian struct {
 	workingDirectory string
 }
 
+// NewDebian creates the directory in which we will download the changelogs
 func NewDebian() Debian {
 	return Debian{workingDirectory: "repos-debian"}
 }
 
+// GetWD returns the working directory.
 func (d Debian) GetWD() string {
 	return d.workingDirectory
 }
 
+// CloneRepo downloads the changelog via wget
 func (d Debian) CloneRepo(pkg string, wd string) error {
 	url := "http://metadata.ftp-master.debian.org/changelogs/main/" + pkg[0:1] + "/" + pkg + "/testing_changelog"
 	cmd := exec.Command("wget", url, "-O", pkg)
@@ -42,6 +46,7 @@ func (d Debian) CloneRepo(pkg string, wd string) error {
 	return nil
 }
 
+// UpdateRepo downloads the changelog again
 func (d Debian) UpdateRepo(pkg string, wd string) error {
 	return d.CloneRepo(pkg, wd)
 }

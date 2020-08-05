@@ -20,7 +20,7 @@ func NewBzr() Bzr {
 	return Bzr{workingDirectory: "repos-bzr"}
 }
 
-// GetWD will return the working directory.
+// GetWD returns the working directory.
 func (b Bzr) GetWD() string {
 	return b.workingDirectory
 }

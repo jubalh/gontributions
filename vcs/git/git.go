@@ -10,14 +10,17 @@ import (
 	"github.com/jubalh/gontributions/util"
 )
 
+// Git is the type to work with git repos.
 type Git struct {
 	workingDirectory string
 }
 
+// NewGit creates the directory in which we will download the repos.
 func NewGit() Git {
 	return Git{workingDirectory: "repos-git"}
 }
 
+// GetWD returns the working directory.
 func (g Git) GetWD() string {
 	return g.workingDirectory
 }

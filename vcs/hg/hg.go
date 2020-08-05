@@ -10,14 +10,17 @@ import (
 	"github.com/jubalh/gontributions/util"
 )
 
+// Hg is the type to work with mercurial repos.
 type Hg struct {
 	workingDirectory string
 }
 
+// NewHg creates the directory in which we will download the repos.
 func NewHg() *Hg {
 	return &Hg{workingDirectory: "repos-hg"}
 }
 
+// GetWD returns the working directory.
 func (h Hg) GetWD() string {
 	return h.workingDirectory
 }
