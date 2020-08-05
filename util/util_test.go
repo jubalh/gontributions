@@ -59,7 +59,7 @@ func TestPrintInfo(t *testing.T) {
 
 	msg := "message"
 
-	PrintInfo(&b, msg, PI_INFO)
+	PrintInfo(&b, msg, PiInfo)
 	actual := strings.TrimSpace(b.String())
 
 	if actual != msg {

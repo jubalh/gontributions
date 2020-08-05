@@ -10,11 +10,11 @@ import (
 )
 
 const (
-	PI_INFO = iota
-	PI_TASK
-	PI_RESULT
-	PI_ERROR
-	PI_MILD_ERROR
+	PiInfo = iota
+	PiTask
+	PiResult
+	PiError
+	PiMildError
 )
 
 type RepoError struct {
@@ -76,15 +76,15 @@ func PrintInfo(w io.Writer, text string, mode int) {
 	}
 
 	switch {
-	case mode == PI_INFO:
+	case mode == PiInfo:
 		pre = ""
-	case mode == PI_TASK:
+	case mode == PiTask:
 		pre = "\033[36m*\033[39m "
-	case mode == PI_RESULT:
+	case mode == PiResult:
 		pre = "\033[35m==>\033[39m "
-	case mode == PI_ERROR:
+	case mode == PiError:
 		pre = "\033[31mError:\033[39m "
-	case mode == PI_MILD_ERROR:
+	case mode == PiMildError:
 		pre = "\033[33m==\033[39m "
 	}
 

@@ -51,7 +51,7 @@ type Contribution struct {
 func scan(v vcs.VCS, repos []string, emails []string, contributions []Contribution) (int, error) {
 	var sum int
 	for _, repo := range repos {
-		util.PrintInfo(os.Stdout, "Working on "+repo, util.PI_TASK)
+		util.PrintInfo(os.Stdout, "Working on "+repo, util.PiTask)
 		if PullSources {
 			err := vcs.GetLatestRepo(repo, v)
 			// if err only update error, but repo is there then still count commits
@@ -59,14 +59,14 @@ func scan(v vcs.VCS, repos []string, emails []string, contributions []Contributi
 				stop := true
 				if cerr, ok := err.(*util.RepoError); ok {
 					if cerr.Update {
-						util.PrintInfoF(logwriter, "Cannot update repo %s: %s", util.PI_MILD_ERROR, repo, cerr.Error())
+						util.PrintInfoF(logwriter, "Cannot update repo %s: %s", util.PiMildError, repo, cerr.Error())
 						stop = false
 					} else if cerr.Clone {
-						util.PrintInfoF(logwriter, "Cannot checkout repo %s: %s", util.PI_MILD_ERROR, repo, cerr.Error())
+						util.PrintInfoF(logwriter, "Cannot checkout repo %s: %s", util.PiMildError, repo, cerr.Error())
 					}
 					//TODO maybe check for cerr.Clone instead of using stop and the general error message
 				} else {
-					util.PrintInfoF(logwriter, "Problem loading repo %s: %s", util.PI_MILD_ERROR, repo, err.Error())
+					util.PrintInfoF(logwriter, "Problem loading repo %s: %s", util.PiMildError, repo, err.Error())
 				}
 				if stop == true {
 					return 0, err
@@ -81,7 +81,7 @@ func scan(v vcs.VCS, repos []string, emails []string, contributions []Contributi
 			}
 
 			if count != 0 {
-				util.PrintInfoF(os.Stdout, "%s: %d commits", util.PI_RESULT, email, count)
+				util.PrintInfoF(os.Stdout, "%s: %d commits", util.PiResult, email, count)
 				sum += count
 			}
 		}
@@ -93,26 +93,26 @@ func scan(v vcs.VCS, repos []string, emails []string, contributions []Contributi
 func scanWiki(project Project, emails []string, contributions []Contribution) int {
 	var sum int
 	for _, wiki := range project.MediaWikis {
-		util.PrintInfoF(os.Stdout, "Working on MediaWiki %s as %s", util.PI_TASK, wiki.BaseUrl, wiki.User)
+		util.PrintInfoF(os.Stdout, "Working on MediaWiki %s as %s", util.PiTask, wiki.BaseUrl, wiki.User)
 
 		wikiCount, err := mediawiki.GetUserEdits(wiki.BaseUrl, wiki.User)
 		if err != nil {
 			switch err.Error() {
 			case "Not a valid URL":
-				util.PrintInfo(logwriter, err.Error(), util.PI_MILD_ERROR)
+				util.PrintInfo(logwriter, err.Error(), util.PiMildError)
 				break
 			case "Not able to HTTP Get",
 				"Not able to decode JSON",
 				"Did not get a 'user' returned":
-				util.PrintInfo(logwriter, err.Error(), util.PI_ERROR)
+				util.PrintInfo(logwriter, err.Error(), util.PiError)
 				break
 			}
 		}
 
 		if wikiCount == 0 {
-			util.PrintInfoF(logwriter, "No edits for user %s at %s", util.PI_MILD_ERROR, wiki.User, wiki.BaseUrl)
+			util.PrintInfoF(logwriter, "No edits for user %s at %s", util.PiMildError, wiki.User, wiki.BaseUrl)
 		} else {
-			util.PrintInfoF(os.Stdout, "%d edits", util.PI_RESULT, wikiCount)
+			util.PrintInfoF(os.Stdout, "%d edits", util.PiResult, wikiCount)
 			sum += wikiCount
 		}
 	}
@@ -124,7 +124,7 @@ func scanOBS(project Project, emails []string, contributions []Contribution) (in
 	var sum int
 Loop_obs:
 	for _, obsEntry := range project.Obs {
-		util.PrintInfo(os.Stdout, "Working on "+obsEntry.Repo, util.PI_TASK)
+		util.PrintInfo(os.Stdout, "Working on "+obsEntry.Repo, util.PiTask)
 
 		if PullSources {
 			err := obs.GetLatestRepo(obsEntry)
@@ -132,14 +132,14 @@ Loop_obs:
 				stop := true
 				if cerr, ok := err.(*util.RepoError); ok {
 					if cerr.Update {
-						util.PrintInfoF(logwriter, "Cannot update repo %s: %s", util.PI_MILD_ERROR, obsEntry.Repo, cerr.Error())
+						util.PrintInfoF(logwriter, "Cannot update repo %s: %s", util.PiMildError, obsEntry.Repo, cerr.Error())
 						stop = false
 					} else if cerr.Clone {
-						util.PrintInfoF(logwriter, "Cannot checkout repo %s: %s", util.PI_MILD_ERROR, obsEntry.Repo, cerr.Error())
+						util.PrintInfoF(logwriter, "Cannot checkout repo %s: %s", util.PiMildError, obsEntry.Repo, cerr.Error())
 					}
 					//TODO maybe check for cerr.Clone instead of using stop and the general error message
 				} else {
-					util.PrintInfoF(logwriter, "Problem loading repo %s: %s", util.PI_MILD_ERROR, obsEntry.Repo, err.Error())
+					util.PrintInfoF(logwriter, "Problem loading repo %s: %s", util.PiMildError, obsEntry.Repo, err.Error())
 				}
 				if stop == true {
 					return 0, err
@@ -150,14 +150,14 @@ Loop_obs:
 			obsCount, err := obs.CountCommits("repos-obs"+"/"+obsEntry.Repo, email)
 			if err != nil {
 				if err == obs.ErrNoChangesFileFound {
-					util.PrintInfo(logwriter, "No .changes file found", util.PI_MILD_ERROR)
+					util.PrintInfo(logwriter, "No .changes file found", util.PiMildError)
 					break Loop_obs
 				}
-				util.PrintInfo(logwriter, err.Error(), util.PI_ERROR) // TODO: return?
+				util.PrintInfo(logwriter, err.Error(), util.PiError) // TODO: return?
 			}
 
 			if obsCount != 0 {
-				util.PrintInfoF(os.Stdout, "%s: %d changes", util.PI_RESULT, email, obsCount)
+				util.PrintInfoF(os.Stdout, "%s: %d changes", util.PiResult, email, obsCount)
 				sum += obsCount
 			}
 		}
@@ -188,16 +188,16 @@ func checkNeededBinaries() map[string]bool {
 
 func printBinaryInfos(binary map[string]bool) {
 	if binary["git"] == false {
-		util.PrintInfo(logwriter, "git is not installed. git repositories will be skipped", util.PI_MILD_ERROR)
+		util.PrintInfo(logwriter, "git is not installed. git repositories will be skipped", util.PiMildError)
 	}
 	if binary["hg"] == false {
-		util.PrintInfo(logwriter, "hg is not installed. Mercurial repositories will be skipped", util.PI_MILD_ERROR)
+		util.PrintInfo(logwriter, "hg is not installed. Mercurial repositories will be skipped", util.PiMildError)
 	}
 	if binary["osc"] == false {
-		util.PrintInfo(logwriter, "osc is not installed. osc repositories will be skipped", util.PI_MILD_ERROR)
+		util.PrintInfo(logwriter, "osc is not installed. osc repositories will be skipped", util.PiMildError)
 	}
 	if binary["debian"] == false {
-		util.PrintInfo(logwriter, "wget is not installed. Debian changelogs will be skipped", util.PI_MILD_ERROR)
+		util.PrintInfo(logwriter, "wget is not installed. Debian changelogs will be skipped", util.PiMildError)
 	}
 }
 

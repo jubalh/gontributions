@@ -2,6 +2,7 @@ package obs
 
 import (
 	"os"
+	"os/exec"
 	"path/filepath"
 	"testing"
 )
@@ -24,6 +25,7 @@ func init() {
 func TestCheckoutAndUpdateRepo(t *testing.T) {
 	setup()
 	defer teardown()
+	checkosc(t)
 
 	t.Logf("Checking out\n\t%s\n\tto:%s\n", repos[0].Repo, absoluteTargetPath)
 
@@ -43,6 +45,7 @@ func TestCheckoutAndUpdateRepo(t *testing.T) {
 func TestGetLatestRepoAndCountCommits(t *testing.T) {
 	setup()
 	defer teardown()
+	checkosc(t)
 
 	t.Logf("Running first time GetLatestRepo, will checkout")
 
