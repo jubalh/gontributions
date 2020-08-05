@@ -9,6 +9,8 @@ import (
 	"strings"
 )
 
+// Constant to define what a message should be printed like.
+// Pi = print information.
 const (
 	PiInfo = iota
 	PiTask
@@ -17,6 +19,9 @@ const (
 	PiMildError
 )
 
+// RepoError is a type for errors in repositories.
+// Either Update or Clone should be set to true to tell
+// where the error occured. Err then contains the error itself.
 type RepoError struct {
 	Update bool
 	Clone  bool
@@ -93,7 +98,7 @@ func PrintInfo(w io.Writer, text string, mode int) {
 	fmt.Fprintf(w, "%s\n", line)
 }
 
-// PrintInfo prints formatable text with a marker to easily spot it.
+// PrintInfoF prints formatable text with a marker to easily spot it.
 func PrintInfoF(w io.Writer, text string, mode int, args ...interface{}) {
 	PrintInfo(w, fmt.Sprintf(text, args...), mode)
 }
