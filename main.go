@@ -164,18 +164,18 @@ func getTemplateOrExitError(ctx *cli.Context) (string, error) {
 			return "", cli.NewExitError(err.Error(), 1)
 		}
 		return string(data), nil
-	} else {
-		// user defined template, use templateName as path to file
-		if !util.FileExists(templateName) {
-			s := fmt.Sprintf("Template file %s does not exist\n", templateName)
-			return "", cli.NewExitError(s, 1)
-		}
-		data, err := ioutil.ReadFile(templateName)
-		if err != nil {
-			return "", cli.NewExitError(err.Error(), 1)
-		}
-		return string(data), nil
 	}
+
+	// user defined template, use templateName as path to file
+	if !util.FileExists(templateName) {
+		s := fmt.Sprintf("Template file %s does not exist\n", templateName)
+		return "", cli.NewExitError(s, 1)
+	}
+	data, err := ioutil.ReadFile(templateName)
+	if err != nil {
+		return "", cli.NewExitError(err.Error(), 1)
+	}
+	return string(data), nil
 }
 
 // notifyOnErrors; in case of a pull, update or other error regarding the checkout and
