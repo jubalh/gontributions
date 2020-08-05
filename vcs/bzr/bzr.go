@@ -10,14 +10,17 @@ import (
 	"github.com/jubalh/gontributions/util"
 )
 
+// Bzr is the type to work with bazaar repos.
 type Bzr struct {
 	workingDirectory string
 }
 
+// NewBzr creates the directory in which we will download the repos.
 func NewBzr() Bzr {
 	return Bzr{workingDirectory: "repos-bzr"}
 }
 
+// GetWD will return the working directory.
 func (b Bzr) GetWD() string {
 	return b.workingDirectory
 }
