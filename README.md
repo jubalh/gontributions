@@ -17,6 +17,19 @@ From there the program grew, to create a small overview in HTML format so you co
 
 Please read [MEANING.md](MEANING.md) to learn more about what is tracked and how to interpret the information.
 
+## Requirements
+The following binaries need to be (optionally) installed:
+* `bzr` for Bazaar support
+* `git` for git support
+* `hg` for Mercurial support
+* `osc` for Open Build Service support
+
+## Installation
+
+```
+go install github.com/jubalh/gontributions@latest
+```
+
 ## Configuration
 You need to create a json file containing your open source contributions. The format is pretty easy. It is best to create an example configuration file and adapt it.
 
