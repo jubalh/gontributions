@@ -5,11 +5,11 @@ import "testing"
 // This Wiki is almost dead.
 // And LXQt has it's own Wiki now so I won't edit this anymore.
 // This makes it save as a testing environment since the edits won't change.
-const wikiURL = "http://wiki.lxde.org/en"
+const wikiURL = "https://www.funtoo.org"
 const invalidURL = "hobbit://mordor.me"
 const noURL = "://.."
 const wikiUsername = "Jubalh"
-const expectedEdits = 8
+const expectedEdits = 93
 const expErrorInvalidURL = "Not a valid URL"
 const expErrorNoHTTPGet = "Not able to HTTP GET"
 
