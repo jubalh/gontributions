@@ -10,7 +10,7 @@ import (
 // MediaWiki holds the base URL of the wiki page to which later the
 // API call will get appended and the username to the wiki.
 type MediaWiki struct {
-	BaseURL string
+	BaseUrl string
 	User    string
 }
 
@@ -28,8 +28,8 @@ type Query struct {
 
 // GetUserEdits calls wikiURL MediaWiki API to retrieve the number of edits
 // the user username has done.
-func GetUserEdits(wikiURL string, username string) (count int, err error) {
-	wikiURL, err := url.Parse(wikiURL)
+func GetUserEdits(wikiurl string, username string) (count int, err error) {
+	wikiURL, err := url.Parse(wikiurl)
 	if err != nil {
 		return 0, errors.New("Not a valid URL")
 	}
