@@ -19,7 +19,7 @@ func init() {
 	if err != nil {
 		panic(err)
 	}
-	repoURL = "https://bitbucket.org/Mojachiee/testrepo"
+	repoURL = "http://code.matthewwild.co.uk/clix"
 	absoluteTargetPath = filepath.Join(wd, "testdata")
 	absoluteRepoPath = filepath.Join(absoluteTargetPath, util.LocalRepoName(repoURL))
 }
@@ -47,7 +47,7 @@ func TestCountCommits(t *testing.T) {
 		t.Error("Error: ", err)
 	}
 
-	countCommit(t, h, "joe.stephenson36@gmail.com", absoluteRepoPath, 2)
+	countCommit(t, h, "mwild1@gmail.com", absoluteRepoPath, 51)
 	countCommit(t, h, "bilbo@shire.ch", absoluteRepoPath, 0)
 }
 
