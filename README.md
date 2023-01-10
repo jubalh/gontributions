@@ -1,4 +1,4 @@
-![Build Status](https://travis-ci.org/jubalh/gontributions.svg?branch=master) ![Code Coverage](https://codecov.io/gh/jubalh/gontributions/branch/master/graph/badge.svg)
+[![Build Status](https://github.com/jubalh/gontributions/workflows/build/badge.svg)](https://github.com/jubalh/gontributions/actions)
 
 # gontributions
 
