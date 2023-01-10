@@ -1,4 +1,5 @@
 [![Build Status](https://github.com/jubalh/gontributions/workflows/build/badge.svg)](https://github.com/jubalh/gontributions/actions)
+[![Go ReportCard](https://goreportcard.com/badge/jubalh/gontributions)](https://goreportcard.com/report/jubalh/gontributions)
 
 # gontributions
 
