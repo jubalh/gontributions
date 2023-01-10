@@ -30,6 +30,12 @@ The following binaries need to be (optionally) installed:
 go install github.com/jubalh/gontributions@latest
 ```
 
+Optionally create the man page:
+
+```
+pandoc --standalone --to man doc/gontributions.1.md -o gontributions.1
+```
+
 ## Configuration
 You need to create a json file containing your open source contributions. The format is pretty easy. It is best to create an example configuration file and adapt it.
 
