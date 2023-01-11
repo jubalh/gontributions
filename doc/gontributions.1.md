@@ -1,4 +1,4 @@
-% gontributions(1) Version 0.6 | contributions saver and lister
+% gontributions(1) Version 0.7 | contributions saver and lister
 
 NAME
 ====
