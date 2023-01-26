@@ -1,5 +1,8 @@
 # Changelog
 
+## [0.7.1] 2023-01-26
+* Update email address
+
 ## [0.7] 2023-01-11
 * Add manpage
 * Document requirements
